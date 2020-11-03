@@ -9,6 +9,7 @@ ReleaseGas() - Takes the foot off the gas and causes the rover to slow down.
 PutInDrive() - Makes the rover ready to drive forward. The rover must be put in drive or reverse before it will move. 
 PutInReverse() - Makes the rover ready to drive backwards. The rover does not have a break. Instead, you can ReleaseGas() or PutInReverse() and drive to slow the rover. 
 DriveFor(timeLength) - Causes the rover to drive for the stated timeLength, in seconds, before turning or changing gear.
+.For(timeLength) - Can add this to TurnLeft(), TurnRight(), or GoStraight() instead of using DriveFor(timeLength)
 
 Turning
 ****************
