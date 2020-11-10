@@ -14,14 +14,12 @@ import numpy
 
 class MyRover(DriveAPI.Rover):  
     def AnalyzeStartUp(rover):
-        # rover.newYoloPrediction = False
         # Runs once when the rover is started, then Analyze is called in a loop
         # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
         rover.PutInDrive()
         # rover.PressGas()
             
     def Analyze(rover):
-        # if not(rover.newYoloPrediction): # makes sure the screenshot is current
         # capture the screen
         rover.CaptureScreen()
         
@@ -58,12 +56,9 @@ class MyRover(DriveAPI.Rover):
         
         print() # newline to space things out
         
-        # rover.newYoloPrediction = True
-        
         rover.PressGas()
         rover.GoStraight().For(0.1)
         rover.ReleaseGas()
-        # rover.newYoloPrediction = False
         
     def DriveStartUp(rover):
         pass
