@@ -12,6 +12,8 @@ from keras.layers import Dense
 from keras.models import model_from_json
 import numpy
 
+screen = pyautogui.size()
+
 class MyRover(DriveAPI.Rover):  
     def AnalyzeStartUp(rover):
         # Runs once when the rover is started, then Analyze is called in a loop
