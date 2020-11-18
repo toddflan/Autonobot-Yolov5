@@ -166,17 +166,12 @@ class MyRover(DriveAPI.Rover):
 	
 				
 def RunRover():
-	rover = MyRover()
-	
-	#Load in the curve straight model (the json file) and weights
-	rover.LoadCurveStraightModel("model.json")
-	rover.LoadCurveStraightWeights("model.h5")
-	
-	#Load in the Yolo model (the cfg file) and weights
-	rover.LoadYoloModel("yolov3.cfg")
-	rover.LoadYoloWeights("yolov3_last.weights")
-	
-	rover.Run()
+    rover = MyRover()
+    
+    # Initialize yolov5, can add device here to use CUDA
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='')
+    
+    rover.Run()
 
 if __name__ == "__main__":
-	RunRover()
+    RunRover()
