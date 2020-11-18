@@ -4,8 +4,6 @@ import time
 from math import*
 
 import pyautogui
-import time
-import threading
 import matplotlib.pyplot as plt
 import PIL
 
