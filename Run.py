@@ -1,83 +1,182 @@
 import DriveAPI
 import threading
 import time
+from math import*
+
 import pyautogui
+import time
+import threading
 import matplotlib.pyplot as plt
 import PIL
 
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.models import model_from_json
 import numpy
 
-class MyRover(DriveAPI.Rover):  
-    def AnalyzeStartUp(rover):
-        # Runs once when the rover is started, then Analyze is called in a loop
-        # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
-        rover.PutInDrive()
-        # rover.PressGas()
-            
-    def Analyze(rover):
-        # capture the screen
-        rover.CaptureScreen()
-        
-        # then translate the screenshot into the form the Yolo predictor needs
-        imageBGR = rover.InterpretImageAsBGR()
-        
-        # send the images through the deep learning models
-        # you do not have to keep the simple structure here
-        # feel free to change things however you want
-        
-        # getting yolo prediction, storing results in rover class variables
-        rover.cones, rover.arucoMarkers = rover.Detect(imageBGR)
-        
-        # maybe process your prediction results here, or in Drive()
-        
-        # rover.cones is a list of objects of type Cone and has the follow members
-        # name
-        # xMin
-        # xMax
-        # yMin
-        # xMax
-        
-        # rover.arucoMarkers is a list of objects of type ArucoMarker and has the follow members
-        # name
-        # xMin
-        # xMax
-        # yMin
-        # xMax
-        
-        print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
-        
-        for arucoMarker in rover.arucoMarkers:
-            print(arucoMarker)
-        for cone in rover.cones:
-            print(cone)
-        
-        print() # newline to space things out
-        
-        rover.PressGas()
-        rover.GoStraight().For(0.1)
-        rover.ReleaseGas()
-        
-    def DriveStartUp(rover):
-        pass
-        
-    def Drive(rover):
-        # use rover.cones and rover.arucoMarkers to make driving decisions
-        # and go through cones
-        pass
-    
-                
+			
+class MyRover(DriveAPI.Rover):	
+	def AnalyzeStartUp(rover):
+		rover.StartCurveStraightModel()
+		rover.StartYoloModel()
+		rover.curveStraightPrediction = "straight"
+		rover.Move = False
+		rover.Analysis = True 
+		rover.rturn = False
+		rover.lturn = False
+		# #Runs once when the rover is started, then Analyze is called in a loop
+		# #Here is where to do any setup items, such as putting the rover in drive and pressing the gas
+		rover.PutInDrive()
+		#rover.PressGas()
+			
+	def Analyze(rover):	
+		if(rover.Analysis):
+			print('Analysis')
+			# capture the screen
+			rover.CaptureScreen()
+			
+			# then translate the screenshot into the forms the CurveStraight and Yolo predictors need
+			imageBGR = rover.InterpretImageAsBGR()
+			imageRGB = rover.InterpretImageAsRGBResizeInArray(480, 270)
+			
+			# send the images through the deep learning models
+			# you do not have to keep the simple structure here
+			# feel free to change things however you want
+			rover.curveStraightPrediction = rover.PredictCurveStraight(imageRGB)	
+			rover.arucoMarkers, rover.cones = rover.PredictYolo(imageBGR)	
+
+			for cone in rover.cones:
+				print(cone)
+
+			rover.Move = True
+			rover.Analysis = False
+			
+		
+		
+		# rover.curveStraightPrediction is string that is either "straight" or "curve"
+		
+		# rover.cones is a list of objects of type Cone and has the follow members
+		# name
+		# xMin
+		# xMax
+		# yMin
+		# xMax
+		
+		# rover.arucoMarkers is a list of objects of type ArucoMarker and has the follow members
+		# name
+		# xMin
+		# xMax
+		# yMin
+		# xMax
+		# marker
+		
+		#for arucoMarker in rover.arucoMarkers:
+			#print(arucoMarker)
+		#for cone in rover.cones:
+			#print(cone)
+
+				
+	def DriveStartUp(rover):
+		pass
+
+	def Drive(rover):
+		# access rover.curveStraightPrediction, rover.curveStraightPrediction, and rover.curveStraightPrediction
+		# here to make driving decisions
+
+		center = 950
+
+		if (rover.Move):
+			print('drive')
+			if((len(rover.cones) == 2) and (rover.cones[0].yMax < 790) and (rover.cones[1].yMax < 790)):
+				if ((rover.cones[0].xMax <= center) and (rover.cones[1].xMin >= center)):
+					time = (800 / (((rover.cones[0].yMax + rover.cones[1].yMax) / 2) - 300)) - 1.5
+					if(time < 1):
+						print("straight")
+						rover.GoStraight()
+						rover.PressGas()
+						rover.DriveFor(1)
+						rover.ReleaseGas()
+						rover.rturn = False
+						rover.lturn = False
+					else:
+						print("Cone straight")
+						rover.GoStraight()
+						rover.PressGas()
+						rover.DriveFor(time)
+						rover.ReleaseGas()
+						rover.rturn = False
+						rover.lturn = False
+				elif(rover.cones[0].xMax > center):
+					print("turn right")
+					rover.PressGas()		
+					rover.TurnRight()
+					if(rover.lturn):
+						rover.DriveFor(0.05)
+					else:
+						rover.DriveFor(0.12)
+					rover.GoStraight()
+					rover.ReleaseGas()
+					rover.rturn = True
+					rover.lturn = False
+				elif(rover.cones[1].xMin < center):
+					print("turn left")
+					rover.PressGas()		
+					rover.TurnLeft()
+					if(rover.rturn):
+						rover.DriveFor(0.05)
+					else:
+						rover.DriveFor(0.12)
+					rover.GoStraight()
+					rover.ReleaseGas()
+					rover.lturn = True
+					rover.rturn = False
+				else:
+					print('Reverse')
+					rover.PutInReverse()
+					rover.PressGas()
+					rover.DriveFor(1)
+					rover.ReleaseGas()
+					rover.PutInDrive()
+					rover.rturn = False
+					rover.lturn = False
+			else:
+				if rover.curveStraightPrediction == "straight":
+					print("straight")
+					rover.GoStraight()
+					rover.PressGas()
+					rover.DriveFor(2)
+					rover.ReleaseGas()
+					rover.rturn = False
+					rover.lturn = False
+				else:
+					print("curve")	
+					rover.PressGas()		
+					rover.TurnLeft().For(1)
+					rover.GoStraight().For(0.3)
+					rover.ReleaseGas()
+					rover.rturn = False
+					rover.lturn = False
+
+			rover.DriveFor(1.3)
+			rover.Analysis = True
+			rover.Move = False
+	
+				
 def RunRover():
-    rover = MyRover()
-    
-    # Initialize yolov5, can add device here to use CUDA
-    rover.InitializeYolov5("unityGameYolov5-best.pt", device='')
-    
-    rover.Run()
+	rover = MyRover()
+	
+	#Load in the curve straight model (the json file) and weights
+	rover.LoadCurveStraightModel("model.json")
+	rover.LoadCurveStraightWeights("model.h5")
+	
+	#Load in the Yolo model (the cfg file) and weights
+	rover.LoadYoloModel("yolov3.cfg")
+	rover.LoadYoloWeights("yolov3_last.weights")
+	
+	rover.Run()
 
 if __name__ == "__main__":
-    RunRover()
+	RunRover()
