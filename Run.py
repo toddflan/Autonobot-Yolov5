@@ -150,7 +150,6 @@ class MyRover(DriveAPI.Rover):
                 rover.PressGas()
                 rover.GoStraight().For(2)
                 rover.ReleaseGas()
-            
         
     def DriveStartUp(rover):
         pass
