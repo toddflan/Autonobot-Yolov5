@@ -17,9 +17,6 @@ import numpy
 			
 class MyRover(DriveAPI.Rover):	
 	def AnalyzeStartUp(rover):
-		rover.StartCurveStraightModel()
-		rover.StartYoloModel()
-		rover.curveStraightPrediction = "straight"
 		rover.Move = False
 		rover.Analysis = True 
 		rover.rturn = False
@@ -37,13 +34,11 @@ class MyRover(DriveAPI.Rover):
 			
 			# then translate the screenshot into the forms the CurveStraight and Yolo predictors need
 			imageBGR = rover.InterpretImageAsBGR()
-			imageRGB = rover.InterpretImageAsRGBResizeInArray(480, 270)
 			
 			# send the images through the deep learning models
 			# you do not have to keep the simple structure here
 			# feel free to change things however you want
-			rover.curveStraightPrediction = rover.PredictCurveStraight(imageRGB)	
-			rover.arucoMarkers, rover.cones = rover.PredictYolo(imageBGR)	
+			rover.cones, rover.arucoMarkers = rover.Detect(imageBGR)
 
 			for cone in rover.cones:
 				print(cone)
@@ -137,23 +132,6 @@ class MyRover(DriveAPI.Rover):
 					rover.DriveFor(1)
 					rover.ReleaseGas()
 					rover.PutInDrive()
-					rover.rturn = False
-					rover.lturn = False
-			else:
-				if rover.curveStraightPrediction == "straight":
-					print("straight")
-					rover.GoStraight()
-					rover.PressGas()
-					rover.DriveFor(2)
-					rover.ReleaseGas()
-					rover.rturn = False
-					rover.lturn = False
-				else:
-					print("curve")	
-					rover.PressGas()		
-					rover.TurnLeft().For(1)
-					rover.GoStraight().For(0.3)
-					rover.ReleaseGas()
 					rover.rturn = False
 					rover.lturn = False
 
