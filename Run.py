@@ -17,6 +17,7 @@ import numpy
 			
 class MyRover(DriveAPI.Rover):	
 	def AnalyzeStartUp(rover):
+		print('test1')
 		rover.Move = False
 		rover.Analysis = True 
 		rover.rturn = False
@@ -135,18 +136,17 @@ class MyRover(DriveAPI.Rover):
 					rover.rturn = False
 					rover.lturn = False
 
-			rover.DriveFor(1.3)
+			#rover.DriveFor(1.3)
 			rover.Analysis = True
 			rover.Move = False
 	
 				
 def RunRover():
-    print('test')
     rover = MyRover()
-    print('test')
+    
     # Initialize yolov5, can add device here to use CUDA
     rover.InitializeYolov5("unityGameYolov5-best.pt", device='')
-    print('test')
+    
     rover.Run()
 
 if __name__ == "__main__":
