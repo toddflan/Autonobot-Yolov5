@@ -141,11 +141,12 @@ class MyRover(DriveAPI.Rover):
 	
 				
 def RunRover():
+    print('test')
     rover = MyRover()
-    
+    print('test')
     # Initialize yolov5, can add device here to use CUDA
     rover.InitializeYolov5("unityGameYolov5-best.pt", device='')
-    
+    print('test')
     rover.Run()
 
 if __name__ == "__main__":
