@@ -18,7 +18,7 @@ import numpy
 class MyRover(DriveAPI.Rover):	
 	def AnalyzeStartUp(rover):
 		print('test1')
-		#rover.PutInDrive()
+		rover.PutInDrive()
 		rover.center = 950
 
 		rover.rturn = False
