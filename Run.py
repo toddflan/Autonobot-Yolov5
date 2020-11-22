@@ -22,10 +22,12 @@ class MyRover(DriveAPI.Rover):
 
 		rover.rturn = False
 		rover.lturn = False
+		print('test2')
 		# #Runs once when the rover is started, then Analyze is called in a loop
 		# #Here is where to do any setup items, such as putting the rover in drive and pressing the gas
 		rover.PutInDrive()
 		#rover.PressGas()
+		print('test3')
 			
 	def Analyze(rover):	
 		
@@ -41,6 +43,9 @@ class MyRover(DriveAPI.Rover):
 		# feel free to change things however you want
 		rover.cones, rover.arucoMarkers = rover.Detect(imageBGR)
 
+		print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
+		for arucoMarker in rover.arucoMarkers:
+            		print(arucoMarker)
 		for cone in rover.cones:
 			print(cone)
 
