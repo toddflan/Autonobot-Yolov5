@@ -54,8 +54,8 @@ class MyRover(DriveAPI.Rover):
 		print('drive')
 		if((len(rover.cones) >= 2) and (rover.cones[0].yMax < 790) and (rover.cones[1].yMax < 790)):
 			if ((rover.cones[0].xMax <= rover.center) and (rover.cones[1].xMin >= rover.center)):
-				time = (800 / (((rover.cones[0].yMax + rover.cones[1].yMax) / 2) - 300)) - 1.5
-				if(time < 1):
+				rover.time = (800 / (((rover.cones[0].yMax + rover.cones[1].yMax) / 2) - 300)) - 1.5
+				if(rover.time < 1):
 					print("straight")
 					rover.GoStraight()
 					rover.PressGas()
@@ -67,7 +67,7 @@ class MyRover(DriveAPI.Rover):
 					print("Cone straight")
 					rover.GoStraight()
 					rover.PressGas()
-					rover.DriveFor(time)
+					rover.DriveFor(rover.time)
 					rover.ReleaseGas()
 					rover.rturn = False
 					rover.lturn = False
