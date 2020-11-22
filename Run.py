@@ -46,7 +46,7 @@ class MyRover(DriveAPI.Rover):
 
 
 		print('drive')
-		if((len(rover.cones) == 2) and (rover.cones[0].yMax < 790) and (rover.cones[1].yMax < 790)):
+		if((len(rover.cones) >= 2) and (rover.cones[0].yMax < 790) and (rover.cones[1].yMax < 790)):
 			if ((rover.cones[0].xMax <= rover.center) and (rover.cones[1].xMin >= rover.center)):
 				time = (800 / (((rover.cones[0].yMax + rover.cones[1].yMax) / 2) - 300)) - 1.5
 				if(time < 1):
