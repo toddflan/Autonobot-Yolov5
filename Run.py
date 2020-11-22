@@ -18,6 +18,7 @@ import numpy
 class MyRover(DriveAPI.Rover):	
 	def AnalyzeStartUp(rover):
 		print('test1')
+		rover.PutInDrive()
 		rover.center = 950
 
 		rover.rturn = False
@@ -25,7 +26,7 @@ class MyRover(DriveAPI.Rover):
 		print('test2')
 		# #Runs once when the rover is started, then Analyze is called in a loop
 		# #Here is where to do any setup items, such as putting the rover in drive and pressing the gas
-		rover.PutInDrive()
+		
 		#rover.PressGas()
 		print('test3')
 			
