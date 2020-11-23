@@ -49,7 +49,22 @@ class MyRover(DriveAPI.Rover):
         # yMin
         # xMax
         
+        center = 1050
+        numCones = len(rover.cones)
+                 
+        if (numCones > 1):
+            if ((rover.cones[0].xMin < rover.cones[1].xMin)):
+                rover.cones[0].name = "L"
+                rover.cones[1].name = "R"
+            else:
+                rover.cones[0].name = "R"
+                rover.cones[1].name = "L"
+            
         print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
+        
+        print()
+        
+        print(rover.cones)
         
         for arucoMarker in rover.arucoMarkers:
             print(arucoMarker)
@@ -57,10 +72,47 @@ class MyRover(DriveAPI.Rover):
             print(cone)
         
         print() # newline to space things out
-        
         rover.PressGas()
-        rover.GoStraight().For(0.2)
+        rover.GoStraight().For(2)
         rover.ReleaseGas()
+        
+        if rover.PredictCurveStraight == "straight":
+            if (numCones == 1):
+                rover.PressGas()
+                rover.TurnLeft().For(0.2)
+                rover.GoStraight().For(1)
+                rover.ReleaseGas()
+            else:
+                rover.PressGas()
+                rover.GoStraight().For(6)
+                rover.ReleaseGas()
+        else:
+            if ((numCones == 0) or (numCones == 1)):
+                rover.PressGas()
+                #rover.TurnLeft().For(0.5)
+                rover.GoStraight().For(2)                
+                rover.ReleaseGas()
+
+            #else:
+                #if ((rover.cones[1].xMin < (center-200))and(rover.cones[0].xMin < (center-200))):
+            elif ((rover.cones[1].xMin > (center+500))and(rover.cones[0].xMin > (center+500))):
+                rover.PressGas()
+                rover.TurnRight().For(0.1)
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+            else:
+                rover.PressGas()
+                rover.TurnLeft().For(0.2)
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+                    #rover.PressGas()
+                    #rover.GoStraight().For(3)
+                    #rover.ReleaseGas()
+        
+#        if ((x - cone[0].xMax) < 0 ):
+#            rover.TurnLeft().For(0.5)
+#        if ((x - cone[1].xMax) > 0 ):
+#            rover.TurnRight().For(0.5)
         
     def DriveStartUp(rover):
         pass
