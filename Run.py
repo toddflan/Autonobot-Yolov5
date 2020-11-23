@@ -59,7 +59,7 @@ class MyRover(DriveAPI.Rover):
         print() # newline to space things out
         
         rover.PressGas()
-        rover.GoStraight().For(0.1)
+        rover.GoStraight().For(0.2)
         rover.ReleaseGas()
         
     def DriveStartUp(rover):
