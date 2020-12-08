@@ -228,7 +228,7 @@ class Rover:
         # Run inference
         t0 = time.time()
         img = torch.zeros((1, 3, self.imgsz, self.imgsz), device=self.device)  # init img
-        _ = model(img.half() if self.half else img) if self.device.type != 'cpu' else None  # run once
+        _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None  # run once
         
         # Padded resize ** from datasets.py **
         img = letterbox(im0s, new_shape=self.imgsz)[0]

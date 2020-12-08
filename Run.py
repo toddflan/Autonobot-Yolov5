@@ -55,7 +55,9 @@ class MyRover(DriveAPI.Rover):
         # Runs once when the rover is started, then Analyze is called in a loop
         # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
         rover.PutInDrive()
-        # rover.PressGas()
+        rover.PressGas()
+        rover.GoStraight().For(2)
+        rover.ReleaseGas()
             
     def Analyze(rover):
         # time.sleep(1)
@@ -148,7 +150,7 @@ class MyRover(DriveAPI.Rover):
                 duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
                 print(duration)
                 rover.PressGas()
-                rover.GoStraight().For(2)
+                rover.GoStraight().For(duration)
                 rover.ReleaseGas()
         
     def DriveStartUp(rover):
@@ -163,7 +165,7 @@ def RunRover():
     rover = MyRover()
     
     # Initialize yolov5, can add device here to use CUDA
-    rover.InitializeYolov5("unityGameYolov5-best.pt", device='')
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='0') # 0 for CUDA gpu
     
     rover.Run()
 
