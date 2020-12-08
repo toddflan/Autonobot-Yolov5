@@ -89,36 +89,36 @@ class MyRover(DriveAPI.Rover):
                     rover.GoStraight().For(2)
                     rover.ReleaseGas()
 
-        in_marker = ac2
-        out_marker = ac1
+        in_marker = ac1
+        out_marker = ac2
 
         if len(in_marker) == 1:
             if in_marker[0][0] < center_x:
-                print("one pass aruco, turn left")
+                print("one through aruco, turn left")
                 rover.PressGas()
                 rover.TurnLeft().For(0.05)
                 rover.ReleaseGas()
                 rover.GoStraight()
             if in_marker[0][0] >= center_x:
-                print("one pass aruco, turn right")
+                print("one through aruco, turn right")
                 rover.PressGas()
                 rover.TurnRight().For(0.05)
                 rover.ReleaseGas()
                 rover.GoStraight()
         if len(in_marker) >= 2:
             if in_marker[0][0] <= center_x and in_marker[1][0] >= center_x or in_marker[1][0] <= center_x and in_marker[0][0] >= center_x:
-                print("two pass aruco, go straight")
+                print("two through aruco, go straight")
                 rover.PressGas()
                 rover.GoStraight().For(2)
                 rover.ReleaseGas()
             elif in_marker[0][0] <= center_x and in_marker[1][0] <= center_x:
-                print("two pass aruco, turn left")
+                print("two through aruco, turn left")
                 rover.PressGas()
                 rover.TurnLeft().For(0.05)
                 rover.ReleaseGas()
                 rover.GoStraight()
             elif in_marker[0][0] >= center_x  and in_marker[1][0] >= center_x:
-                print("two pass aruco, turn left")
+                print("two through aruco, turn left")
                 rover.PressGas()
                 rover.TurnRight().For(0.05)
                 rover.ReleaseGas()
