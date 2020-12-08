@@ -4,6 +4,7 @@ import threading
 import matplotlib.pyplot as plt
 import PIL
 from PIL import ImageGrab
+import sys
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -144,6 +145,7 @@ class Rover:
         pyautogui.keyUp(Rover.leftArrow)
         pyautogui.keyUp(Rover.rightArrow)
         
+        
     def Finish(self):
         self.ForceStop()
         
@@ -244,12 +246,24 @@ class Rover:
             img = img.unsqueeze(0)
 
         # Inference
+<<<<<<< Updated upstream
         t1 = time_synchronized()
+=======
+        #t1 = time_synchronized()
+        
+        now = time.time()
+>>>>>>> Stashed changes
         pred = self.model(img, augment=self.augment)[0]
 
         # Apply NMS
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms)
+<<<<<<< Updated upstream
         t2 = time_synchronized()
+=======
+        done = time.time()
+        sys.stdout.flush()
+        #t2 = time_synchronized()
+>>>>>>> Stashed changes
         
         path = '' # blank for now
         im0 = im0s.copy() # make a copy to annotate
@@ -404,6 +418,7 @@ class Rover:
     def Input(self):
         char = input()
         self.ForceStop()
+        pass
         
     def DriveStartUp(self):
         print("DriveStartUp Not Implemented")   
@@ -416,6 +431,7 @@ class Rover:
         
         while self.state != Rover.forceStopped:
             self.Drive()
+            time.sleep(0.001)
         
     def Drive(self):
         print("Drive Not Implemented")
@@ -427,25 +443,7 @@ class Rover:
         
             
     def Run(self):
-        print(3)
-        time.sleep(0.5)
-        print(2)
-        time.sleep(0.5)
-        print(1)
-        time.sleep(0.5)
-        
-        self.analyzeThread = threading.Thread(target=self.AnalyzeScript)
-        self.analyzeThread.start()
-        
-        self.drivingThread = threading.Thread(target=self.DriveScript)
-        self.drivingThread.start()
-        
-        self.inputThread = threading.Thread(target=self.Input)
-        self.inputThread.start()
-        
-        self.analyzeThread.join()
-        self.drivingThread.join()
-        self.inputThread.join()
+        pass
         
         
         

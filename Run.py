@@ -20,11 +20,21 @@ class MyRover(DriveAPI.Rover):
         # rover.PressGas()
             
     def Analyze(rover):
+<<<<<<< Updated upstream
         # capture the screen
+=======
+        # ca1pture the screen
+        now1 = time.time()
+>>>>>>> Stashed changes
         rover.CaptureScreen()
         
         # then translate the screenshot into the form the Yolo predictor needs
         imageBGR = rover.InterpretImageAsBGR()
+<<<<<<< Updated upstream
+=======
+        done = time.time()
+        print("time1: " + str(done - now1))
+>>>>>>> Stashed changes
         
         # send the images through the deep learning models
         # you do not have to keep the simple structure here
@@ -48,7 +58,7 @@ class MyRover(DriveAPI.Rover):
         # xMax
         # yMin
         # xMax
-        
+        t3 = time.time()
         print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
         
         for arucoMarker in rover.arucoMarkers:
@@ -56,12 +66,18 @@ class MyRover(DriveAPI.Rover):
         for cone in rover.cones:
             print(cone)
         
+        
         print() # newline to space things out
         
         rover.PressGas()
         rover.GoStraight().For(0.1)
-        rover.ReleaseGas()
+        #rover.ReleaseGas()
+
+        print("TIME3",str(time.time()-t3))
         
+        print("TOTAL TIME")
+        print(time.time()-now1)
+        print("")
     def DriveStartUp(rover):
         pass
         
@@ -69,13 +85,36 @@ class MyRover(DriveAPI.Rover):
         # use rover.cones and rover.arucoMarkers to make driving decisions
         # and go through cones
         pass
-    
+    def Run(self):
+##        print(3)
+##        time.sleep(0.5)
+##        print(2)
+##        time.sleep(0.5)
+##        print(1)
+##        time.sleep(0.5)
+        
+        self.analyzeThread = threading.Thread(target=self.AnalyzeScript)
+        self.analyzeThread.start()
+        
+        self.drivingThread = threading.Thread(target=self.DriveScript)
+        self.drivingThread.start()
+        
+        self.inputThread = threading.Thread(target=self.Input)
+        #self.inputThread.start()
+        
+        self.analyzeThread.join()
+        self.drivingThread.join()
+        #self.inputThread.join()
                 
 def RunRover():
     rover = MyRover()
     
     # Initialize yolov5, can add device here to use CUDA
+<<<<<<< Updated upstream
     rover.InitializeYolov5("unityGameYolov5-best.pt", device='')
+=======
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='0')
+>>>>>>> Stashed changes
     
     rover.Run()
 
