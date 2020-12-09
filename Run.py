@@ -13,29 +13,7 @@ from keras.models import model_from_json
 import numpy
 
 class MyRover(DriveAPI.Rover):  
-    def Run(self):
-        print(3)
-        time.sleep(0.5)
-        print(2)
-        time.sleep(0.5)
-        print(1)
-        time.sleep(0.5)
-        
-        self.analyzeThread = threading.Thread(target=self.AnalyzeScript)
-        self.analyzeThread.start()
-        
-        self.drivingThread = threading.Thread(target=self.DriveScript)
-        self.drivingThread.start()
-        
-        #self.inputThread = threading.Thread(target=self.Input)
-        #self.inputThread.start()
-        
-        self.analyzeThread.join()
-        self.drivingThread.join()
-        #self.inputThread.join()
-        
-
-
+    
     def AnalyzeStartUp(rover):
         # Runs once when the rover is started, then Analyze is called in a loop
         # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
@@ -104,7 +82,7 @@ def RunRover():
     rover = MyRover()
     
     # Initialize yolov5, can add device here to use CUDA
-    rover.InitializeYolov5("unityGameYolov5-best.pt", device='0')
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='1')
     
     rover.Run()
 

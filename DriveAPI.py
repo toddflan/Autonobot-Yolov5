@@ -425,6 +425,7 @@ class Rover:
         
         while self.state != Rover.forceStopped:
             self.Drive()
+            time.sleep(0.001)
         
     def Drive(self):
         print("Drive Not Implemented")
@@ -436,7 +437,25 @@ class Rover:
         
             
     def Run(self):
-        pass
+        print(3)
+        time.sleep(0.5)
+        print(2)
+        time.sleep(0.5)
+        print(1)
+        time.sleep(0.5)
+        
+        self.analyzeThread = threading.Thread(target=self.AnalyzeScript)
+        self.analyzeThread.start()
+        
+        self.drivingThread = threading.Thread(target=self.DriveScript)
+        self.drivingThread.start()
+        
+        self.inputThread = threading.Thread(target=self.Input)
+        self.inputThread.start()
+        
+        self.analyzeThread.join()
+        self.drivingThread.join()
+        self.inputThread.join()
         
         
         
