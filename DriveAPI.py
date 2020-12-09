@@ -244,7 +244,7 @@ class Rover:
             img = img.unsqueeze(0)
 
         # Inference
-        t1 = time_synchronized()
+        #t1 = time_synchronized()
         
         now = time.time()
         pred = self.model(img, augment=self.augment)[0]
@@ -254,7 +254,7 @@ class Rover:
         done = time.time()
         print("time3: " + str(done - now))
         
-        t2 = time_synchronized()
+        #t2 = time_synchronized()
         
         path = '' # blank for now
         im0 = im0s.copy() # make a copy to annotate
@@ -434,25 +434,7 @@ class Rover:
         
             
     def Run(self):
-        print(3)
-        time.sleep(0.5)
-        print(2)
-        time.sleep(0.5)
-        print(1)
-        time.sleep(0.5)
-        
-        self.analyzeThread = threading.Thread(target=self.AnalyzeScript)
-        self.analyzeThread.start()
-        
-        self.drivingThread = threading.Thread(target=self.DriveScript)
-        self.drivingThread.start()
-        
-        self.inputThread = threading.Thread(target=self.Input)
-        self.inputThread.start()
-        
-        self.analyzeThread.join()
-        self.drivingThread.join()
-        self.inputThread.join()
+        pass
         
         
         
