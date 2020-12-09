@@ -108,6 +108,7 @@ class Rover:
         pyautogui.keyUp(Rover.downArrow)
         self.downArrowKeyState = Rover.keyUp
         self.gear = Rover.drive
+        return self
         
     def PutInReverse(self):
         pyautogui.keyUp(Rover.upArrow)
@@ -254,7 +255,7 @@ class Rover:
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms)
         done = time.time()
         sys.stdout.flush()
-        print("time3: " + str(done - now))
+        # print("Inference time: " + str(done - now))
         
         #t2 = time_synchronized()
         
@@ -267,7 +268,7 @@ class Rover:
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image/
-            print(i)
+            #print(i)
             p, s = path, ''
 
             s += '%gx%g ' % img.shape[2:]  # print string
