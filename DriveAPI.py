@@ -4,6 +4,7 @@ import threading
 import matplotlib.pyplot as plt
 import PIL
 from PIL import ImageGrab
+import sys
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -252,6 +253,7 @@ class Rover:
         # Apply NMS
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms)
         done = time.time()
+        sys.stdout.flush()
         print("time3: " + str(done - now))
         
         #t2 = time_synchronized()

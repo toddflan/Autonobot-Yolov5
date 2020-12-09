@@ -104,7 +104,7 @@ def RunRover():
     rover = MyRover()
     
     # Initialize yolov5, can add device here to use CUDA
-    rover.InitializeYolov5("unityGameYolov5-best.pt", device='1')
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='0')
     
     rover.Run()
 
