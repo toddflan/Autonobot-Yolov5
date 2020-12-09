@@ -53,76 +53,104 @@ class MyRover(DriveAPI.Rover):
             
         print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
         
+        numCones = 0
+        #Left/Right Labels not working
+
+        if (len(rover.arucoMarkers) > 1):
+            numCones = len(rover.arucoMarkers)
+            mins = numpy.zeros(numCones)
+            for i in range (numCones):
+                numpy.append(mins, rover.arucoMarkers[i].yMin)
+
+            i = numpy.argmin(mins)
+            mins[i] = 100000
+            j = numpy.argmin(mins)
+            rover.arucoMarkers[i].name = "L"
+            rover.arucoMarkers[j].name = "R"
+            rightmin = rover.cones[j].xMin
+            leftmax = rover.cones[i].xMax
+            gate_center = leftmax + ((rightmin - leftmax)/2)
+
+        elif (len(rover.arucoMarkers) == 1):
+            coneMin = rover.arucoMarkers[0].xMin
+            coneMax = rover.arucoMarkers[0].xMax
+
+        else:
+            numCones = len(rover.cones)
+            if (numCones > 1):
+                mins = numpy.zeros(numCones)
+                for i in range (numCones):
+                    numpy.append(mins, rover.cones[i].yMin)
+
+                i = numpy.argmin(mins)
+                mins[i] = 100000
+                j = numpy.argmin(mins)
+                
+                rover.cones[i].name = "L"
+                rover.cones[j].name = "R"
+                rightmin = rover.cones[j].xMin
+                leftmax = rover.cones[i].xMax
+                gate_center = leftmax + ((rightmin - leftmax)/2)
+
+
         print()
-        print(rover.arucoMarkers)
-        print(rover.cones)
         
         for arucoMarker in rover.arucoMarkers:
             print(arucoMarker)
         for cone in rover.cones:
             print(cone)
-       
-        if (len(rover.arucoMarkers) >= len(rover.cones)):
-            numCones = len(rover.arucoMarkers)
-        else:
-            numCones = len(rover.cones)
 
-        mins = numpy.zeros(numCones)
-        if (numCones > 0):
-            for i in range (numCones):
-                numpy.append(mins, rover.cones[i].yMin)
-
-            i = numpy.argmin(mins)
-            mins[i] = 100000
-            j = numpy.argmin(mins)
-        
-        if ((numCones>1)):
-            rover.cones[i].name = "L"
-            rover.cones[j].name = "R"
         print() # newline to space things out
 
-        rover.PressGas()
-        rover.GoStraight().For(0.1)
-        rover.GoStraight().For(2)
-        rover.ReleaseGas()
+#        rover.PressGas()
+#        rover.GoStraight().For(2)
+#        rover.ReleaseGas()
 
         if rover.PredictCurveStraight == "straight":
-            if (numCones == 1):
-                rover.PressGas()
-                rover.TurnLeft().For(0.2)
-                rover.GoStraight().For(1)
-                rover.ReleaseGas()
-            else:
-                rover.PressGas()
-                rover.GoStraight().For(6)
-                rover.ReleaseGas()
-        else:
-            if ((numCones == 0) or (numCones == 1)):
-                rover.PressGas()
-                #rover.TurnLeft().For(0.5)
-                rover.GoStraight().For(2)                
-                rover.ReleaseGas()
+#            if (numCones < 2):
+#                rover.PressGas()
+#                rover.TurnLeft().For(0.2)
+#                rover.GoStraight().For(0.5)
+#                rover.ReleaseGas()
+#            else:
+            rover.PressGas()
+            rover.GoStraight().For(4)
+            rover.ReleaseGas()
 
-            #else:
-                #if ((rover.cones[1].xMin < (center-200))and(rover.cones[0].xMin < (center-200))):
-            elif ((rover.cones[1].xMin > (center+500))and(rover.cones[0].xMin > (center+500))):
+        elif (numCones > 1):
+            if (center < (gate_center - 175)):
                 rover.PressGas()
                 rover.TurnRight().For(0.1)
-                rover.GoStraight().For(0.5)
+                rover.GoStraight().For(0.05)
+                rover.ReleaseGas()
+            elif (center > (gate_center + 175)):
+                rover.PressGas()
+                rover.TurnLeft().For(0.1)
+                rover.GoStraight().For(0.05)
                 rover.ReleaseGas()
             else:
                 rover.PressGas()
-                rover.TurnLeft().For(0.2)
-                rover.GoStraight().For(0.5)
+                rover.GoStraight().For(1)
                 rover.ReleaseGas()
-                    #rover.PressGas()
-                    #rover.GoStraight().For(3)
-                    #rover.ReleaseGas()
+        elif(numCones == 1):
+            if(center < coneMin):
+                rover.PressGas()
+                rover.TurnRight().For(0.15)
+                rover.GoStraight()
+                rover.ReleaseGas()
+            elif(center > coneMax):
+                    rover.PressGas()
+                    rover.TurnLeft().For(0.15)
+                    rover.GoStraight()
+                    rover.ReleaseGas()
+        else:
+            rover.PressGas()
+            #Increased turn left
+            rover.TurnLeft().For(0.5)
+            #removed For
+            rover.GoStraight()
+            rover.ReleaseGas()
 
-    #        if ((x - cone[0].xMax) < 0 ):
-    #            rover.TurnLeft().For(0.5)
-    #        if ((x - cone[1].xMax) > 0 ):
-    #            rover.TurnRight().For(0.5)
         
     def DriveStartUp(rover):
         pass
