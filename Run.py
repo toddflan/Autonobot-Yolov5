@@ -50,8 +50,8 @@ class MyRover(DriveAPI.Rover):
         # yMin
         # xMax
         # print("Width =", GetSystemMetrics(0))
-        dimension = pyautogui.size()
-        x = dimension[0] / 2
+        dim = pyautogui.size()
+        x = dim[0] / 2
         # print("Height =", GetSystemMetrics(1))
 
         print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
@@ -63,35 +63,80 @@ class MyRover(DriveAPI.Rover):
         # beginning of the track
         ruco = rover.arucoMarkers
         # if there are none turn left
+            # if one marker go towards the marker
         if len(rover.arucoMarkers) == 0 and len(rover.cones) == 2:
             rover.PressGas()
-            rover.GoStraight().For(2)
-            # if one marker go towards the marker
-        else:
-            if len(ruco) == 0:
+            rover.GoStraight().For(6)
+        if len(ruco) == 0:
+            rover.PressGas()
+            rover.TurnLeft().For(0.25)
+            rover.GoStraight()
+            rover.ReleaseGas()
+        if len(ruco) == 1:
+            if ruco[0].xMax < x:
                 rover.PressGas()
-                rover.TurnLeft().For(1)
-                rover.GoStraight().For(.35)
+                rover.TurnLeft().For(.25)
+                rover.GoStraight().For(0.5)
                 rover.ReleaseGas()
-            if len(ruco) == 1:
-                if ruco[0].xMax < x:
-                    rover.PressGas()
-                    rover.TurnLeft().For(.15)
-                    rover.ReleaseGas()
-                if ruco[0].xMin > x:
-                    rover.PressGas()
-                    rover.TurnRight().For(.15)
-                    rover.GoStraight().For(.35)
-                    rover.ReleaseGas()
-                if len(ruco) == 2:
-                    left = 0
-                    right = 0
-                    if ruco[0].xMax < ruco[1].xMax:
-                        left = ruco[0].xMax
-                        right = ruco[1].xMin
-                    else:
-                        left = ruco[1].xMax
-                        right = ruco[0].xMin
+            if ruco[0].xMin > x:
+                rover.PressGas()
+                rover.TurnRight().For(.15)
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+        if len(ruco) == 2:
+            left = 0
+            right = 0
+            if ruco[0].xMax < x < ruco[1].xMin:
+                rover.PressGas()
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+            if ruco[0].xMax > x:
+                rover.PressGas()
+                rover.TurnRight().For(.15)
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+            else:
+                rover.PressGas()
+                rover.TurnLeft().For(.25)
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+        if len(ruco) > 2:
+            y_min = 100000000
+            for a in ruco:
+                if a.yMin < y_min:
+                    y_min = a.yMin
+
+            two_cones = []
+            for a in ruco:
+                if abs(a.yMin - y_min) < (a.yMin * .1):
+                    two_cones.append(a)
+            print("TWO CONES:", len(two_cones))
+            for cone in two_cones:
+                print("Y MIN :", cone.yMin)
+            if two_cones[0].xMin > two_cones[1].xMin:
+                temp_cone = two_cones[0];
+                two_cones[0] = two_cones[1]
+                two_cones[1] = temp_cone
+
+            if two_cones[0].xMax < x < two_cones[1].xMin:
+                rover.PressGas()
+                rover.GoStraight().For(.5)
+                rover.ReleaseGas()
+            elif two_cones[0].xMax > x:
+                rover.PressGas()
+                rover.TurnRight().For(.15)
+                rover.GoStraight()
+                rover.ReleaseGas()
+            elif two_cones[1].xMin < x:
+                rover.PressGas()
+                rover.TurnLeft().For(.25)
+                rover.GoStraight()
+                rover.ReleaseGas()
+            else:
+                rover.PressGas()
+                rover.GoStraight().For(0.5)
+                rover.ReleaseGas()
+
     def DriveStartUp(rover):
         pass
 
