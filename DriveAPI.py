@@ -245,10 +245,15 @@ class Rover:
 
         # Inference
         t1 = time_synchronized()
+        
+        now = time.time()
         pred = self.model(img, augment=self.augment)[0]
 
         # Apply NMS
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms)
+        done = time.time()
+        print("time3: " + str(done - now))
+        
         t2 = time_synchronized()
         
         path = '' # blank for now
@@ -302,6 +307,7 @@ class Rover:
         return coneBoxes, amBoxes
     
     def PredictYolo(self, image):
+    
         output = self.yolo.predict_coord(image)
         
         arucoMarkers = self.get_aruco_task(output)

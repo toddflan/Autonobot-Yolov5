@@ -21,17 +21,23 @@ class MyRover(DriveAPI.Rover):
             
     def Analyze(rover):
         # capture the screen
+        now = time.time()
         rover.CaptureScreen()
         
         # then translate the screenshot into the form the Yolo predictor needs
         imageBGR = rover.InterpretImageAsBGR()
+        done = time.time()
+        print("time1: " + str(done - now))
         
         # send the images through the deep learning models
         # you do not have to keep the simple structure here
         # feel free to change things however you want
         
         # getting yolo prediction, storing results in rover class variables
+        now = time.time()
         rover.cones, rover.arucoMarkers = rover.Detect(imageBGR)
+        done = time.time()
+        print("time2: " + str(done - now))
         
         # maybe process your prediction results here, or in Drive()
         
