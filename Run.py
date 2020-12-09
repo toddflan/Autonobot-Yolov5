@@ -102,6 +102,16 @@ class MyRover(DriveAPI.Rover):
 
         print() # newline to space things out
 
+        if ((numCones > 0) and (rover.cones[i].xMin < 10) and rover.cones[i].yMin < 1000):
+            rover.PutInReverse()
+            rover.PressGas()
+            rover.GoStraight().For(1)
+            rover.ReleaseGas()
+            rover.PutInDrive()
+
+        else:
+            pass
+
         if rover.PredictCurveStraight == "straight":
 
             rover.PressGas()
@@ -111,7 +121,7 @@ class MyRover(DriveAPI.Rover):
         elif (numCones > 1):
             if (center < (gate_center - 175)):
                 rover.PressGas()
-                rover.TurnRight().For(0.1)
+                rover.TurnRight().For(0.05)
                 rover.GoStraight().For(0.05)
                 rover.ReleaseGas()
             elif (center > (gate_center + 175)):
