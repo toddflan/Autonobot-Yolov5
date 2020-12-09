@@ -92,6 +92,7 @@ class MyRover(DriveAPI.Rover):
 
         for arucoMarker in rover.arucoMarkers:
             print(arucoMarker)
+            print("NAME:", arucoMarker.name)
         for cone in rover.cones:
             print(cone)
         # beginning of the track
@@ -107,6 +108,51 @@ class MyRover(DriveAPI.Rover):
         else:
             ams = rover.arucoMarkers
             # if there are none turn left
+            # if len(ams) == 0:
+            #     rover.PressGas()
+            #     rover.TurnLeft().For(1.2)
+            #     rover.GoStraight().For(.3)
+            #     rover.ReleaseGas()
+            # # if one marker go towards the marker
+            # if len(ams) == 1:
+            #     if ams[0].xMax < x_rover:
+            #         rover.PressGas()
+            #         rover.TurnLeft().For(.1)
+            #         rover.GoStraight().For(.2)
+            #         rover.ReleaseGas()
+            #     if ams[0].xMin > x_rover:
+            #         rover.PressGas()
+            #         rover.TurnRight().For(.1)
+            #         rover.GoStraight().For(.2)
+            #         rover.ReleaseGas()
+            # if len(ams) >= 2:
+            #     if len(ams) == 2:
+            #         left = 0
+            #         right = 0
+            #         if ams[0].xMax < ams[1].xMax:
+            #             left = ams[0].xMax
+            #             right = ams[1].xMin
+            #         else:
+            #             left = ams[1].xMax
+            #             right = ams[0].xMin
+            #     # decides left and right x-values when more than 2 markers
+            #     elif len(ams) > 2:
+            #         left, right = gate(ams)
+            #     if left < x_rover < right:
+            #         rover.PressGas()
+            #         rover.GoStraight().For(1.05)
+            #         rover.ReleaseGas()
+            #     elif right < x_rover:
+            #         rover.PressGas()
+            #         rover.TurnLeft().For(.21)
+            #         rover.GoStraight().For(.3)
+            #         rover.ReleaseGas()
+            #     elif left > x_rover:
+            #         rover.PressGas()
+            #         rover.TurnRight().For(.21)
+            #         rover.GoStraight().For(.3)
+            #         rover.ReleaseGas()
+
             if len(ams) == 0:
                 rover.PressGas()
                 rover.TurnLeft().For(1.2)
@@ -115,19 +161,29 @@ class MyRover(DriveAPI.Rover):
             # if one marker go towards the marker
             if len(ams) == 1:
                 if ams[0].xMax < x_rover:
-                    rover.PressGas()
-                    rover.TurnLeft().For(.1)
-                    rover.GoStraight().For(.2)
-                    rover.ReleaseGas()
+                    if ams[0].name == "AM1":
+                        rover.PressGas()
+                        rover.TurnLeft().For(.1)
+                        rover.GoStraight().For(.2)
+                        rover.ReleaseGas()
+                    elif ams[0].name == "AM2":
+                        rover.PressGas()
+                        # rover.TurnRight().For(.1)
+                        rover.GoStraight().For(.2)
+                        rover.ReleaseGas()
                 if ams[0].xMin > x_rover:
-                    rover.PressGas()
-                    rover.TurnRight().For(.1)
-                    rover.GoStraight().For(.2)
-                    rover.ReleaseGas()
+                    if ams[0].name == "AM1":
+                        rover.PressGas()
+                        rover.TurnRight().For(.1)
+                        rover.GoStraight().For(.2)
+                        rover.ReleaseGas()
+                    elif ams[0].name == "AM2":
+                        rover.PressGas()
+                        # rover.TurnLeft().For(.1)
+                        rover.GoStraight().For(.2)
+                        rover.ReleaseGas()
             if len(ams) >= 2:
                 if len(ams) == 2:
-                    left = 0
-                    right = 0
                     if ams[0].xMax < ams[1].xMax:
                         left = ams[0].xMax
                         right = ams[1].xMin
@@ -137,20 +193,42 @@ class MyRover(DriveAPI.Rover):
                 # decides left and right x-values when more than 2 markers
                 elif len(ams) > 2:
                     left, right = gate(ams)
-                if left < x_rover < right:
-                    rover.PressGas()
-                    rover.GoStraight().For(1.05)
-                    rover.ReleaseGas()
-                elif right < x_rover:
-                    rover.PressGas()
-                    rover.TurnLeft().For(.21)
-                    rover.GoStraight().For(.3)
-                    rover.ReleaseGas()
-                elif left > x_rover:
-                    rover.PressGas()
-                    rover.TurnRight().For(.21)
-                    rover.GoStraight().For(.3)
-                    rover.ReleaseGas()
+                leftAruco = ams[0]
+                for aruco in rover.arucoMarkers:
+                    if abs(aruco.xMax - left) < (0.1 * aruco.xMax):
+                        leftAruco = aruco
+                if leftAruco.name == "AM1":
+                    if left < x_rover < right:
+                        rover.PressGas()
+                        rover.GoStraight().For(1.05)
+                        rover.ReleaseGas()
+                    elif right < x_rover:
+                        rover.PressGas()
+                        rover.TurnLeft().For(.21)
+                        rover.GoStraight().For(.3)
+                        rover.ReleaseGas()
+                    elif left > x_rover:
+                        rover.PressGas()
+                        rover.TurnRight().For(.21)
+                        rover.GoStraight().For(.3)
+                        rover.ReleaseGas()
+                elif leftAruco.name == "AM2":
+                    if left < x_rover < right:
+                        rover.PressGas()
+                        rover.TurnRight().For(.1)
+                        rover.GoStraight().For(1.05)
+                        rover.ReleaseGas()
+                    if right < x_rover:
+                        rover.PressGas()
+                        # rover.TurnRight().For(.1)
+                        rover.GoStraight().For(.3)
+                        rover.ReleaseGas()
+                    elif left > x_rover:
+                        rover.PressGas()
+                        # rover.TurnLeft().For(.21)
+                        rover.GoStraight().For(.3)
+                        rover.ReleaseGas()
+
 
 
     def DriveStartUp(rover):
