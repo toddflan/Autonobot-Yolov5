@@ -102,17 +102,8 @@ class MyRover(DriveAPI.Rover):
 
         print() # newline to space things out
 
-#        rover.PressGas()
-#        rover.GoStraight().For(2)
-#        rover.ReleaseGas()
-
         if rover.PredictCurveStraight == "straight":
-#            if (numCones < 2):
-#                rover.PressGas()
-#                rover.TurnLeft().For(0.2)
-#                rover.GoStraight().For(0.5)
-#                rover.ReleaseGas()
-#            else:
+
             rover.PressGas()
             rover.GoStraight().For(4)
             rover.ReleaseGas()
