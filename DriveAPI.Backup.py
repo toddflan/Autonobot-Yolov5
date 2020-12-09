@@ -264,8 +264,7 @@ class Rover:
         amBoxes = []
 
         # Process detections
-        for i, det in enumerate(pred):  # detections per image/
-            print(i)
+        for i, det in enumerate(pred):  # detections per image
             p, s = path, ''
 
             s += '%gx%g ' % img.shape[2:]  # print string
