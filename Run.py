@@ -145,7 +145,7 @@ class MyRover(DriveAPI.Rover):
                     rover.ReleaseGas()
         else:
             rover.PressGas()
-            #Increased turn left
+            #Increased turn left by 0.3
             rover.TurnLeft().For(0.5)
             #removed For
             rover.GoStraight()
