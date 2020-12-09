@@ -55,9 +55,9 @@ class MyRover(DriveAPI.Rover):
         # Runs once when the rover is started, then Analyze is called in a loop
         # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
         rover.PutInDrive()
-        rover.PressGas()
-        rover.GoStraight().For(2)
-        rover.ReleaseGas()
+        # rover.PressGas()
+        # rover.GoStraight().For(2)
+        # rover.ReleaseGas()
             
     def Analyze(rover):
         # time.sleep(1)
@@ -91,7 +91,7 @@ class MyRover(DriveAPI.Rover):
         # yMin
         # xMax
         
-        # print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
+        print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
         
         gate = getGate(rover.arucoMarkers)
         print(gate)
