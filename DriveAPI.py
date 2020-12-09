@@ -35,23 +35,23 @@ class Square:
         self.yMin = -1
         self.xMax = -1
         self.name = ""
-        
+
     def __str__(self):
         return self.name + " - " + "xMin: " + str(self.xMin) + ", " + "xMax: " + str(self.xMax) + ", " + "yMin: " + str(self.yMin) + ", " + "yMax: " + str(self.yMax)
-    
+
 class Cone(Square):
     pass
-    
+
 class ArucoMarker(Square):
     def __init__(self):
         Square.__init__(self)
         self.marker = -1
-        
+
     def __str__(self):
         return self.name + " - " + "marker: " + str(self.marker) + ", " + "xMin: " + str(self.xMin) + ", " + "xMax: " + str(self.xMax) + ", " + "yMin: " + str(self.yMin) + ", " + "yMax: " + str(self.yMax)
-    
 
-        
+
+
 class Rover:
     drive = 'drive'
     reverse = 'reverse'
@@ -67,7 +67,7 @@ class Rover:
     left = 'left'
     right = 'right'
     straight = 'straight'
-    
+
     alive = 'alive'
     forceStopped = 'forceStopped'
 
@@ -85,34 +85,37 @@ class Rover:
         self.number = 0
         self.startUpFinished = False
         # self.monitor = {"top": 0, "left": 0, "width": 800, "height": 600}
-        
-            
+
+
     def PressGas(self):
         self.pedal = Rover.press
         if self.gear == Rover.drive:
             pyautogui.keyDown(Rover.upArrow)
             self.upArrowKeyState = Rover.keyDown
         elif self.gear == Rover.reverse:
-            pyautogui.keyDown(Rover.downArrow)  
+            pyautogui.keyDown(Rover.downArrow)
             self.downArrowKeyState = Rover.keyDown
-        
+
+        return self
+
     def ReleaseGas(self):
         pyautogui.keyUp(Rover.upArrow)
         pyautogui.keyUp(Rover.downArrow)
         self.pedal = Rover.release
         self.upArrowKeyState = Rover.keyUp
         self.downArrowKeyState = Rover.keyUp
-    
+        return self
+
     def PutInDrive(self):
         pyautogui.keyUp(Rover.downArrow)
         self.downArrowKeyState = Rover.keyUp
         self.gear = Rover.drive
-        
+
     def PutInReverse(self):
         pyautogui.keyUp(Rover.upArrow)
         self.upArrowKeyState = Rover.keyUp
         self.gear = Rover.reverse
-        
+
     def TurnLeft(self):
         pyautogui.keyUp(Rover.rightArrow)
         pyautogui.keyDown(Rover.leftArrow)
@@ -120,7 +123,7 @@ class Rover:
         self.leftArrowKeyState = Rover.keyDown
         self.direction = Rover.left
         return self
-    
+
     def TurnRight(self):
         pyautogui.keyUp(Rover.leftArrow)
         pyautogui.keyDown(Rover.rightArrow)
@@ -128,7 +131,7 @@ class Rover:
         self.rightArrowKeyState = Rover.keyDown
         self.direction = Rover.right
         return self
-    
+
     def GoStraight(self):
         pyautogui.keyUp(Rover.leftArrow)
         pyautogui.keyUp(Rover.rightArrow)
@@ -136,29 +139,29 @@ class Rover:
         self.rightArrowKeyState = Rover.keyUp
         self.direction = Rover.straight
         return self
-        
+
     def ForceStop(self):
-        self.state = Rover.forceStopped 
+        self.state = Rover.forceStopped
         pyautogui.keyUp(Rover.upArrow)
         pyautogui.keyUp(Rover.downArrow)
         pyautogui.keyUp(Rover.leftArrow)
         pyautogui.keyUp(Rover.rightArrow)
-        
+
     def Finish(self):
         self.ForceStop()
-        
+
     def DriveFor(self, timeLength):
         time.sleep(timeLength)
-        
+
     def For(self, timeLength):
         time.sleep(timeLength)
-        
+
     def LoadCurveStraightModel(self, json):
         self.curveStraightJson = json
-        
+
     def LoadCurveStraightWeights(self, weights):
         self.curveStraightWeights = weights
-    
+
     def StartCurveStraightModel(self):
         # load json and create model
         json_file = open(self.curveStraightJson, 'r')
@@ -169,13 +172,13 @@ class Rover:
         loaded_model.load_weights(self.curveStraightWeights)
         print("Loaded model from disk")
         self.model = loaded_model
-        
+
     def LoadYoloModel(self, config):
         self.yoloConfig = config
-        
+
     def LoadYoloWeights(self, weights):
         self.yoloWeights = weights
-        
+
     def StartYoloModel(self):
         args = {
             "classes": ["Cone","Aruco 1", "Aruco 2"],
@@ -183,20 +186,20 @@ class Rover:
             "config": self.yoloConfig
         }
         self.yolo = predictor(args["classes"], args["weights"], args["config"])
-        
+
     def AnalyzeStartUp(self):
         print("AnalyzeStartUp Not Implemented")
-        
+
     def AnalyzeScript(self):
         self.AnalyzeStartUp()
-        self.startUpFinished = True         
+        self.startUpFinished = True
 
         while self.state != Rover.forceStopped:
             self.Analyze()
-        
+
     def Analyze(self):
-        print("Analyze Not Implemented")    
-    
+        print("Analyze Not Implemented")
+
     def InitializeYolov5(self, weightsFile, device=''):
         # *** from detect.py ***
         # set default values
@@ -207,7 +210,7 @@ class Rover:
         self.agnostic_nms = False
         self.augment = False
         self.classes = None
-        
+
         # Initialize
         set_logging()
         self.device = select_device(device) # set device
@@ -218,25 +221,25 @@ class Rover:
         self.imgsz = check_img_size(self.imgsz, s=self.model.stride.max())  # check img_size
         if self.half:
             self.model.half()  # to FP16
-        
+
         # Get names and colors
         self.names = self.model.module.names if hasattr(self.model, 'module') else self.model.names
         self.colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(self.names))]
-    
+
     def Detect(self, im0s):
         # *** from detect.py ***
         # Run inference
         t0 = time.time()
         img = torch.zeros((1, 3, self.imgsz, self.imgsz), device=self.device)  # init img
         _ = model(img.half() if self.half else img) if self.device.type != 'cpu' else None  # run once
-        
+
         # Padded resize ** from datasets.py **
         img = letterbox(im0s, new_shape=self.imgsz)[0]
-        
+
         # Convert ** from datasets.py **
         img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416 ** <- dims are wrong?? **
         img = numpy.ascontiguousarray(img)
-        
+
         img = torch.from_numpy(img).to(self.device)
         img = img.half() if self.half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -250,7 +253,7 @@ class Rover:
         # Apply NMS
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms)
         t2 = time_synchronized()
-        
+
         path = '' # blank for now
         im0 = im0s.copy() # make a copy to annotate
 
@@ -294,25 +297,25 @@ class Rover:
                         am.yMin = int(xyxy[1])
                         am.yMax = int(xyxy[3])
                         amBoxes.append(am)
-        
+
         # save_img = False
         # if save_img:
             # cv2.imwrite("test2.jpg", im0)
-        
+
         return coneBoxes, amBoxes
-    
+
     def PredictYolo(self, image):
         output = self.yolo.predict_coord(image)
-        
+
         arucoMarkers = self.get_aruco_task(output)
         cones = self.get_cones(output)
-                    
+
         arucoMarkerSquares = []
         coneSquares = []
-        
+
         if arucoMarkers is not -1:
             am_left,am_right = self.get_lr_cone(arucoMarkers)
-            
+
             arucoMarkerLeftSquare = ArucoMarker()
             arucoMarkerLeftSquare.name = "Aruco Marker Left"
             arucoMarkerLeftSquare.marker = am_left[0]
@@ -320,7 +323,7 @@ class Rover:
             arucoMarkerLeftSquare.xMax = am_left[4]
             arucoMarkerLeftSquare.yMin = am_left[3]
             arucoMarkerLeftSquare.yMax = am_left[5]
-            
+
             arucoMarkerRightSquare = ArucoMarker()
             arucoMarkerRightSquare.name = "Aruco Marker Right"
             arucoMarkerRightSquare.marker = am_right[0]
@@ -328,104 +331,104 @@ class Rover:
             arucoMarkerRightSquare.xMax = am_right[4]
             arucoMarkerRightSquare.yMin = am_right[3]
             arucoMarkerRightSquare.yMax = am_right[5]
-            
+
             arucoMarkerSquares.append(arucoMarkerLeftSquare)
             arucoMarkerSquares.append(arucoMarkerRightSquare)
-            
+
 
         if cones is not None and output is not None:
             cone_left,cone_right = self.get_lr_cone(cones)
-            
+
             coneLeftSquare = Square()
             coneLeftSquare.name = "Cone Left"
             coneLeftSquare.xMin = cone_left[2]
             coneLeftSquare.xMax = cone_left[4]
             coneLeftSquare.yMin = cone_left[3]
             coneLeftSquare.yMax = cone_left[5]
-            
+
             coneRightSquare = Square()
             coneRightSquare.name = "Cone Right"
             coneRightSquare.xMin = cone_right[2]
             coneRightSquare.xMax = cone_right[4]
             coneRightSquare.yMin = cone_right[3]
             coneRightSquare.yMax = cone_right[5]
-                        
+
             coneSquares.append(coneLeftSquare)
             coneSquares.append(coneRightSquare)
-            
+
         return arucoMarkerSquares, coneSquares
-    
-    
+
+
     def PredictCurveStraight(self, image):
         prediction = self.model.predict(image)
         if prediction[0][0] > prediction[0][1]:
             return "straight"
         return "curve"
-        
+
     def CaptureScreen(self):
         self.screen = pyautogui.screenshot()
-        
+
     def InterpretImageAsRGBResize(self, width, height):
         array = numpy.array(self.screen.resize((width, height)))
         return array
-        
+
     def InterpretImageAsRGB(self):
         array = numpy.array(self.screen)
         return array
-        
+
     def InterpretImageAsRGBResizeInArray(self, width, height):
         array = numpy.array(self.screen.resize((width, height)))
         array = array[numpy.newaxis,...]
         return array
-        
+
     def InterpretImageAsRGBInArray(self):
         array = numpy.array(self.screen)
         array = array[numpy.newaxis,...]
         return array
-        
+
     def InterpretImageAsBGRResize(self, width, height):
         array = (numpy.array(self.screen.resize((width, height))))[:,:,::-1]
         return array
-        
+
     def InterpretImageAsBGR(self):
         array = (numpy.array(self.screen))[:,:,::-1]
         return array
-        
+
     def InterpretImageAsBGRResizeInArray(self, width, height):
         array = (numpy.array(self.screen.resize((width, height))))[:,:,::-1]
         array = array[numpy.newaxis,...]
         return array
-        
+
     def InterpretImageAsBGRInArray(self):
         array = (numpy.array(self.screen))[:,:,::-1]
         array = array[numpy.newaxis,...]
         return array
-        
+
     def Input(self):
         char = input()
         self.ForceStop()
-        
+
     def DriveStartUp(self):
-        print("DriveStartUp Not Implemented")   
-        
+        print("DriveStartUp Not Implemented")
+
     def DriveScript(self):
         while self.startUpFinished == False:
             time.sleep(.25)
-        
+
         self.DriveStartUp()
-        
+
         while self.state != Rover.forceStopped:
             self.Drive()
-        
+
     def Drive(self):
         print("Drive Not Implemented")
-        
-        
-                
-        
-        
-        
-            
+
+
+
+
+
+
+
     def Run(self):
         print(3)
         time.sleep(0.5)
@@ -433,24 +436,24 @@ class Rover:
         time.sleep(0.5)
         print(1)
         time.sleep(0.5)
-        
+
         self.analyzeThread = threading.Thread(target=self.AnalyzeScript)
         self.analyzeThread.start()
-        
+
         self.drivingThread = threading.Thread(target=self.DriveScript)
         self.drivingThread.start()
-        
+
         self.inputThread = threading.Thread(target=self.Input)
         self.inputThread.start()
-        
+
         self.analyzeThread.join()
         self.drivingThread.join()
         self.inputThread.join()
-        
-        
-        
-        
-        
+
+
+
+
+
     #YOLO Support Functions
     def get_area(self, item):
         coord1 = item[2]
@@ -493,8 +496,8 @@ class Rover:
                         max1 = area
                         temp[1] = temp[0]
                         temp[0] = arucos[x]
-                        
-                        
+
+
                     else:
                         max2 = area
                         temp[1] = arucos[x]
@@ -519,7 +522,7 @@ class Rover:
                 #print("aruco 1 is seen")
                 objective = 3
                 return temp
-                
+
     def get_cones(self, output):
         cones = []
         if output is None or len(output) is 0:
@@ -541,24 +544,24 @@ class Rover:
                         max2 = max1
                         max1 = area
                         temp[1] = cones[0]
-                        temp[0] = cones[x]    
+                        temp[0] = cones[x]
                     else:
                         max2 = area
                         temp[1] = cones[x]
         if temp[0] is None:
             return None
         return temp
-        
+
     def color_cones(self, img,cones):
         #print(cones)
         for c in cones:
             img = self.draw_rect(img,[c[2],c[3],c[4],c[5]])
         return img
-        
+
     def get_slope(self, ams):
         am_left,am_right = self.get_lr_cone(ams)
         return float((am_right[5]-am_left[5])/(am_right[2]-am_left[4]))
-        
+
     def get_lr_cone(self, ams):
         am_left = []
         am_right = []
@@ -569,7 +572,7 @@ class Rover:
             am_left = ams[1]
             am_right = ams[0]
         return [am_left,am_right]
-        
+
     def display_image(self, img,name):
         scale_percent = 60 # percent of original size
         width = int(img.shape[1] * scale_percent / 100)
@@ -578,11 +581,11 @@ class Rover:
         resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
         cv2.imshow(name,resized)
         cv2.waitKey(1)
-        
+
     def draw_rect(self, img,rect,color=(0,0,255)):
         img = cv2.rectangle(img,(rect[0],rect[1]),(rect[2],rect[3]),color,3)
         return img
-        
+
     def draw_rect_aruco(self, img,rect1,rect2):
         im2 = cv2.rectangle(img,(rect1[0],rect1[1]),(rect1[2],rect1[3]),(255,0,0),3)
         im2 = cv2.rectangle(im2,(rect2[0],rect2[1]),(rect2[2],rect2[3]),(0,255,255),3)
