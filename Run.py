@@ -28,7 +28,7 @@ def getGate(list):
     # function to return the points for the closest gate
     size = len(list)
     if size == 0:
-        return 'none', 0, 0, 0
+        return 'none', 0, 0, 0, 0
     else:
         list.sort(reverse=True, key=getYMax)
         
@@ -37,18 +37,24 @@ def getGate(list):
             closeInY = (list[i].yMax < 1.1*list[i+1].yMax) and (list[i].yMax > 0.9*list[i+1].yMax)
             if sameType and closeInY: # made a gate
                 if list[i].xMin < list[i+1].xMin: # getting L and R
-                    return list[i].name, list[i].xMax, list[i+1].xMin, list[i].yMax
+                    if list[i].name == 'AM1':
+                        return list[i].name, list[i].xMax, list[i+1].xMin, list[i].yMax, list[i].xMax-list[i].xMin
+                    else:
+                        return list[i].name, list[i].xMin, list[i+1].xMax, list[i].yMax, list[i].xMax-list[i].xMin
                 else:
-                    return list[i].name, list[i+1].xMax, list[i].xMin, list[i].yMax
+                    if list[i].name == 'AM1':
+                        return list[i].name, list[i+1].xMax, list[i].xMin, list[i].yMax, list[i].xMax-list[i].xMin
+                    else:
+                        return list[i].name, list[i+1].xMin, list[i].xMax, list[i].yMax, list[i].xMax-list[i].xMin
         
         # didn't find a gate
         for i in range(size):
             if list[i].yMax < 0.8*screenDim[1]: # not way at the bottom of screen
-                return 'one', list[i].xMin, list[i].xMax, list[i].yMax
+                return 'one', list[i].xMin, list[i].xMax, list[i].yMax, 0
         
-        return 'none', 0, 0, 0
+        return 'none', 0, 0, 0, 0
         # am1 gate - AM1, am2 gate - AM2, no gate - none, single cone - one
-        # gate type, left point, right point, y value
+        # gate type, left point, right point, y value, width
 
 class MyRover(DriveAPI.Rover):  
     def AnalyzeStartUp(rover):
@@ -96,7 +102,7 @@ class MyRover(DriveAPI.Rover):
         gate = getGate(rover.arucoMarkers)
         print(gate)
         
-        # print(gate[0], gate[1], gate[2], gate[3])
+        # print(gate[0], gate[1], gate[2], gate[3], gate[4])
         
         # for arucoMarker in sortedList:
             # print(arucoMarker)
@@ -114,18 +120,56 @@ class MyRover(DriveAPI.Rover):
         leftEnd = gate[1]
         rightEnd = gate[2]
         yVal = gate[3]
+        amWidth = gate[4]
         gap = rightEnd - leftEnd
         
         if gateType == 'none':
-            print('cone search')
-            rover.PressGas()
-            rover.TurnLeft().For(maxTurn)
-            rover.GoStraight()
-            rover.ReleaseGas()
-        # elif gateType == 'AM2': # go to outside of the gate
-            # pass
+            coneGate = getGate(rover.cones)
+            if coneGate[0] == 'none': # check for cones when we don't see AMs
+                print('cone search')
+                rover.PressGas()
+                rover.TurnLeft().For(maxTurn)
+                rover.GoStraight()
+                rover.ReleaseGas()
+            else:
+                print('straight')
+                diffNormalized = (screenDim[1] - yVal) / screenDim[1]/2
+                duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
+                print(duration)
+                rover.PressGas()
+                rover.GoStraight().For(duration)
+                rover.ReleaseGas()
+        elif gateType == 'AM2': # go to outside of the gate (to the R for now)
+            leftEnd = rightEnd
+            rightEnd = rightEnd + gap
+            if rightEnd - amWidth/2 - gap*0.05 < screenDim[0]/2:
+                print('turn left')
+                diffNormalized = (-rightEnd + gap*0.05 + screenDim[0]/2) / screenDim[0]/2
+                duration = (1 - diffNormalized)*minTurn + diffNormalized*maxTurn
+                print(duration)
+                rover.PressGas()
+                rover.TurnLeft().For(duration)
+                rover.GoStraight()
+                rover.ReleaseGas()
+            elif leftEnd + amWidth/2 + gap*0.05 > screenDim[0]/2:
+                print('turn right')
+                diffNormalized = (rightEnd + gap*0.05 - screenDim[0]/2) / screenDim[0]/2
+                duration = (1 - diffNormalized)*minTurn + diffNormalized*maxTurn
+                print(duration)
+                rover.PressGas()
+                rover.TurnRight().For(duration)
+                rover.GoStraight()
+                rover.ReleaseGas()
+            else:
+                print('straight')
+                diffNormalized = (screenDim[1] - yVal) / screenDim[1]/2
+                duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
+                print(duration)
+                rover.PressGas()
+                rover.GoStraight().For(duration)
+                rover.ReleaseGas()
         else:
-            if leftEnd + gap*0.05 > screenDim[0]/2: # checking if center is between two cones
+            if leftEnd + amWidth/2 + gap*0.05 > screenDim[0]/2: # checking if center is between two cones
                 print('turn right')
                 diffNormalized = (leftEnd + gap*0.05 - screenDim[0]/2) / screenDim[0]/2
                 duration = (1 - diffNormalized)*minTurn + diffNormalized*maxTurn
@@ -134,7 +178,7 @@ class MyRover(DriveAPI.Rover):
                 rover.TurnRight().For(duration)
                 rover.GoStraight()
                 rover.ReleaseGas()
-            elif rightEnd - gap*0.05 < screenDim[0]/2:
+            elif rightEnd - amWidth/2 - gap*0.05 < screenDim[0]/2:
                 print('turn left')
                 diffNormalized = (-rightEnd + gap*0.05 + screenDim[0]/2) / screenDim[0]/2
                 duration = (1 - diffNormalized)*minTurn + diffNormalized*maxTurn
@@ -145,7 +189,6 @@ class MyRover(DriveAPI.Rover):
                 rover.ReleaseGas()
             else:
                 print('straight')
-                # set up a variable straight duration
                 diffNormalized = (screenDim[1] - yVal) / screenDim[1]/2
                 duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
                 print(duration)
@@ -165,7 +208,7 @@ def RunRover():
     rover = MyRover()
     
     # Initialize yolov5, can add device here to use CUDA
-    rover.InitializeYolov5("unityGameYolov5-best.pt", device='1') # gpu 1 for CUDA
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='') # gpu 1 for CUDA
     
     rover.Run()
 
