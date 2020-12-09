@@ -55,8 +55,45 @@ class MyRover(DriveAPI.Rover):
             print(arucoMarker)
         for cone in rover.cones:
             print(cone)
+            
         
-        print() # newline to space things out
+        
+        print("checking")
+        
+        if len(rover.arucoMarkers)>1:
+            rover.target = (rover.arucoMarkers[0].xMax + rover.arucoMarkers[1].xMin)/2
+            if rover.target < 1000:
+                print("")
+                print("going Left//////////////////////////////////////////////////////////////////////////////")
+                rover.PressGas()
+                rover.TurnLeft().For(.001)
+                rover.ReleaseGas()
+                rover.GoStraight().For(0.1)
+                
+            elif rover.target >1130:
+                print("")
+                print("going Right/////////////////////////////////////////////////////////////////////////////")
+                rover.PressGas()
+                rover.TurnRight().For(.001)
+                rover.ReleaseGas()
+                rover.GoStraight().For(0.1)
+                
+            else:
+                print("")
+                print("Straight////////////////////////////////////////////////////////////////////////////////")
+                rover.PressGas()
+                rover.GoStraight().For(0.1)
+                rover.ReleaseGas()
+        
+        else:
+            print("")
+            print("No Markers///////////////////////////////////////////////////////////////////////////")
+            rover.PressGas()
+            rover.TurnLeft().For(.001)
+            rover.ReleaseGas()
+            rover.GoStraight().For(0.1)
+            
+            
         
         rover.PressGas()
         rover.GoStraight().For(0.1)
