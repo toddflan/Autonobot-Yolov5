@@ -104,7 +104,6 @@ class MyRover(DriveAPI.Rover):
         # while currentPredictionCount == rover.predictionCount:
             # time.sleep(.01)
             
-        print('\n')
                 
         closestCones = rover.closestCones
         closestConesCount = rover.closestConesCount
@@ -150,80 +149,67 @@ class MyRover(DriveAPI.Rover):
         if closestConesCount >= 2:
             cone1AreaPercentage = rover.ConeArea(closestCones[1]) / (rover.screenWidth * rover.screenHeight)
             
-        #os.system('cls')
-        print('Aruco Markers Picked Up: ' + str(len(rover.arucoMarkers)))
-        print('Cone 0 Area Percentage: ' + str(cone0AreaPercentage))
-        print('Cone 1 Area Percentage: ' + str(cone1AreaPercentage))
-        print('Aruco Marker 1: ' + str(closestCones[0]))
-        print('Aruco Marker 2: ' + str(closestCones[1]))
-        print('Midpoint %: ' + str(round(100 * midPoint / rover.screenWidth)) + " %")
-        print('Midpoint: ' + str(midPoint))
+        if closestConesCount >= 1 and closestCones[0].name == "AM2":
+            rover.arucoMarker2Counter = rover.arucoMarker2Counter + 1
+            if rover.arucoMarker2Counter >= 5:
+                print("Set Bump True")
+                print(rover.arucoMarker2Counter)
+                rover.useBump = True
+        elif closestConesCount >= 1 and closestCones[0].name == "AM1":
+            rover.arucoMarker2Counter = 0
+            
+        # print('\n')
+        # print('Aruco Markers Picked Up: ' + str(len(rover.arucoMarkers)))
+        # print('Cone 0 Area Percentage: ' + str(cone0AreaPercentage))
+        # print('Cone 1 Area Percentage: ' + str(cone1AreaPercentage))
+        # print('Aruco Marker 1: ' + str(closestCones[0]))
+        # print('Aruco Marker 2: ' + str(closestCones[1]))
+        # print('Midpoint %: ' + str(round(100 * midPoint / rover.screenWidth)) + " %")
+        # print('Midpoint: ' + str(midPoint))
+        
+        
         
         if cone0AreaPercentage == 0 and cone1AreaPercentage == 0:
             if rover.direction != rover.left:
                 rover.TurnLeft()
-        #elif max(cone0AreaPercentage, cone1AreaPercentage) < .0025 and midPoint >= (rover.screenWidth / 2) - (bound) and midPoint <= (rover.screenWidth / 2) + (bound):
         elif max(cone0AreaPercentage, cone1AreaPercentage) < .00055 and midPoint >= (rover.screenWidth / 2) - (bound) and midPoint <= (rover.screenWidth / 2) + (bound): #was .0007
-            print("Far away go forward")
-            #straightTime = rover.StraightTime(max(cone0AreaPercentage, cone1AreaPercentage))
-            #rover.DriveStraight(straightTime)
-            #rover.DriveStraight(.1)
+            # print("Far away go forward")
             if rover.direction != rover.straight:
                 rover.GoStraight()
-                #rover.GoStraight().For(.25)
-        # elif rover.cones[0].xMax >= rover.screenWidth / 2 - coneBound and rover.cones[0].xMax <= rover.screenWidth / 2 + coneBound and cone0AreaPercentage > .005:
         elif cone0AreaPercentage != 0 and closestCones[0].xMax >= rover.screenWidth / 2 - coneBound and closestCones[0].xMax <= rover.screenWidth / 2 + coneBound and cone0AreaPercentage > .005:
             # print("Nudge Right")
-            # rover.NudgeRight()
             if rover.direction != rover.right:
                 rover.TurnRight()
-        # elif rover.cones[1].xMin >= rover.screenWidth / 2 - coneBound and rover.cones[1].xMin <= rover.screenWidth / 2 + coneBound and cone1AreaPercentage > .005:
         elif cone1AreaPercentage != 0 and closestCones[1].xMin >= rover.screenWidth / 2 - coneBound and closestCones[1].xMin <= rover.screenWidth / 2 + coneBound and cone1AreaPercentage > .005:
             # print("Nudge Left")
-            # rover.NudgeLeft()
             if rover.direction != rover.left:
                 rover.TurnLeft()
-        elif min(cone0AreaPercentage, cone1AreaPercentage) >= .00176 and midPoint >= rover.screenWidth / 2 - bound and midPoint <= rover.screenWidth / 2 + bound:
+        elif max(cone0AreaPercentage, cone1AreaPercentage) >= .0019 and midPoint >= rover.screenWidth / 2 - bound and midPoint <= rover.screenWidth / 2 + bound:
             print("Blaze AHEAD!")
-            if closestCones[0].name == "AM1":
-                rover.GoStraight().For(.35)
+            # if closestCones[0].name == "AM1":
+            if rover.useBump == False:
+                rover.GoStraight().For(.6)
             else:
-                for i in range(3):
+                for i in range(4):
                     print("BUMP!")
                     rover.TurnLeft()
                     rover.GoStraight()
+                rover.useBump = False
                     
         elif midPoint >= (rover.screenWidth / 2) - bound and midPoint <= (rover.screenWidth / 2) + bound: # or (rover.cones[0].xMax < rover.screenWidth / 2 -  2 * bound and rover.cones[1].xMin > rover.screenWidth / 2 +  2 * bound ):
             #print("Proceed Forward!")
-            #straightTime = rover.StraightTime(max(cone0AreaPercentage, cone1AreaPercentage))
-            #rover.DriveStraight(straightTime)
-            #rover.DriveStraight(driveInterval)
             if rover.direction != rover.straight:
                 rover.GoStraight()
-        else:
-            midPointOff = abs(rover.screenWidth / 2 - midPoint)
-            #print("MidPointOff: " + str(midPointOff) + " px, " + str(round(100 * midPointOff / rover.screenWidth)) + " %")
-            
-            #turnPercent = (midPointOff / rover.screenWidth)
-            #turnAmount = .8 * turnPercent
-            #print("TurnAmount: " + str(turnAmount))
-            
+        else:            
             if midPoint <= rover.screenWidth / 2 - bound:
                 #print("Proceed Left!")
-                #rover.DriveLeft(turnAmount)
-                #rover.DriveLeft(driveInterval)
                 if rover.direction != rover.left:
                     rover.TurnLeft()
-                #rover.GoStraight()
             else:
                 #print("Proceed Right!")
-                #rover.DriveRight(turnAmount)        
-                #rover.DriveRight(driveInterval)
                 if rover.direction != rover.right:
                     rover.TurnRight()
-                #rover.GoStraight()
                         
-        # rover.predictionTracker = rover.predictionCount + 1
         
     def SelectTwoClosestCones(rover):
         coneAreas = []
@@ -313,6 +299,8 @@ class MyRover(DriveAPI.Rover):
         
     def DriveStartUp(rover):
         rover.firstDrive = True
+        rover.arucoMarker2Counter = 0
+        rover.useBump = False
         pass
         
     def DriveStraight(rover, time):
