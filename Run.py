@@ -36,24 +36,29 @@ def getGate(list):
             sameType = (list[i].name == list[i+1].name) # determine if they're part of the same gate
             closeInY = (list[i].yMax < 1.1*list[i+1].yMax) and (list[i].yMax > 0.9*list[i+1].yMax)
             if sameType and closeInY: # made a gate
+                width = list[i].xMax - list[i].xMin
                 if list[i].xMin < list[i+1].xMin: # getting L and R
                     if list[i].name == 'AM1':
-                        return list[i].name, list[i].xMax, list[i+1].xMin, list[i].yMax, list[i].xMax-list[i].xMin
+                        return list[i].name, list[i].xMax, list[i+1].xMin, list[i].yMax, width
                     else:
-                        return list[i].name, list[i].xMin, list[i+1].xMax, list[i].yMax, list[i].xMax-list[i].xMin
+                        return list[i].name, list[i].xMin, list[i+1].xMax, list[i].yMax, width
                 else:
                     if list[i].name == 'AM1':
-                        return list[i].name, list[i+1].xMax, list[i].xMin, list[i].yMax, list[i].xMax-list[i].xMin
+                        return list[i].name, list[i+1].xMax, list[i].xMin, list[i].yMax, width
                     else:
-                        return list[i].name, list[i+1].xMin, list[i].xMax, list[i].yMax, list[i].xMax-list[i].xMin
+                        return list[i].name, list[i+1].xMin, list[i].xMax, list[i].yMax, width
         
         # didn't find a gate
         for i in range(size):
             if list[i].yMax < 0.8*screenDim[1]: # not way at the bottom of screen
-                return 'one', list[i].xMin, list[i].xMax, list[i].yMax, 0
+                if list[i].name == 'AM2':
+                    width = list[i].xMax - list[i].xMin
+                    return list[i].name, list[i].xMax - (3*width), list[i].xMax, list[i].yMax, width
+                else:
+                    return 'one', list[i].xMin, list[i].xMax, list[i].yMax, 0
         
         return 'none', 0, 0, 0, 0
-        # am1 gate - AM1, am2 gate - AM2, no gate - none, single cone - one
+        # am1 gate - AM1, am2 gate - AM2, no gate - none
         # gate type, left point, right point, y value, width
 
 class MyRover(DriveAPI.Rover):  
@@ -97,7 +102,7 @@ class MyRover(DriveAPI.Rover):
         # yMin
         # xMax
         
-        print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
+        #print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
         
         gate = getGate(rover.arucoMarkers)
         print(gate)
@@ -133,6 +138,7 @@ class MyRover(DriveAPI.Rover):
                 rover.ReleaseGas()
             else:
                 print('straight')
+                yVal = coneGate[3]
                 diffNormalized = (screenDim[1] - yVal) / screenDim[1]/2
                 duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
                 print(duration)
@@ -208,7 +214,7 @@ def RunRover():
     rover = MyRover()
     
     # Initialize yolov5, can add device here to use CUDA
-    rover.InitializeYolov5("unityGameYolov5-best.pt", device='') # gpu 1 for CUDA
+    rover.InitializeYolov5("unityGameYolov5-best.pt", device='1') # gpu 1 for CUDA
     
     rover.Run()
 
