@@ -139,8 +139,9 @@ class MyRover(DriveAPI.Rover):
             else:
                 print('straight')
                 yVal = coneGate[3]
-                diffNormalized = (screenDim[1] - yVal) / screenDim[1]/2
-                duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
+                #diffNormalized = (screenDim[1] - yVal) / screenDim[1]/2
+                #duration = (1 - diffNormalized)*minForward + diffNormalized*maxForward
+                duration = 1
                 print(duration)
                 rover.PressGas()
                 rover.GoStraight().For(duration)
