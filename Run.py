@@ -184,7 +184,7 @@ class MyRover(DriveAPI.Rover):
             # print("Nudge Left")
             if rover.direction != rover.left:
                 rover.TurnLeft()
-        elif max(cone0AreaPercentage, cone1AreaPercentage) >= .0019 and midPoint >= rover.screenWidth / 2 - bound and midPoint <= rover.screenWidth / 2 + bound:
+        elif max(cone0AreaPercentage, cone1AreaPercentage) >= .0022 and midPoint >= rover.screenWidth / 2 - bound and midPoint <= rover.screenWidth / 2 + bound: #.0019 works very wells
             print("Blaze AHEAD!")
             # if closestCones[0].name == "AM1":
             if rover.useBump == False:
