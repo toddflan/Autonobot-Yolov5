@@ -67,13 +67,14 @@ class MyRover(DriveAPI.Rover):
             j = numpy.argmin(mins)
             rover.arucoMarkers[i].name = "L"
             rover.arucoMarkers[j].name = "R"
-            rightmin = rover.cones[j].xMin
-            leftmax = rover.cones[i].xMax
+            rightmin = rover.arucoMarkers[j].xMin
+            leftmax = rover.arucoMarkers[i].xMax
             gate_center = leftmax + ((rightmin - leftmax)/2)
 
         elif (len(rover.arucoMarkers) == 1):
             coneMin = rover.arucoMarkers[0].xMin
             coneMax = rover.arucoMarkers[0].xMax
+
 
         else:
             numCones = len(rover.cones)
@@ -91,7 +92,11 @@ class MyRover(DriveAPI.Rover):
                 rightmin = rover.cones[j].xMin
                 leftmax = rover.cones[i].xMax
                 gate_center = leftmax + ((rightmin - leftmax)/2)
-
+            elif (numCones==1):
+                coneMin = rover.cones[0].xMin
+                coneMax = rover.cones[0].xMax
+            else:
+                numCones = 0
 
         print()
         
@@ -102,15 +107,6 @@ class MyRover(DriveAPI.Rover):
 
         print() # newline to space things out
 
-        if ((numCones > 0) and (rover.cones[i].xMin < 10) and rover.cones[i].yMin < 1000):
-            rover.PutInReverse()
-            rover.PressGas()
-            rover.GoStraight().For(1)
-            rover.ReleaseGas()
-            rover.PutInDrive()
-
-        else:
-            pass
 
         if rover.PredictCurveStraight == "straight":
 
@@ -147,7 +143,7 @@ class MyRover(DriveAPI.Rover):
         else:
             rover.PressGas()
             #Increased turn left by 0.3
-            rover.TurnLeft().For(0.5)
+            rover.TurnLeft().For(1)
             #removed For
             rover.GoStraight()
             rover.ReleaseGas()
