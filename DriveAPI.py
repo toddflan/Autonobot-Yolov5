@@ -96,6 +96,7 @@ class Rover:
         elif self.gear == Rover.reverse:
             pyautogui.keyDown(Rover.downArrow)  
             self.downArrowKeyState = Rover.keyDown
+        return self
         
     def ReleaseGas(self):
         pyautogui.keyUp(Rover.upArrow)
