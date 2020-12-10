@@ -54,7 +54,6 @@ class MyRover(DriveAPI.Rover):
         print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
         
         numCones = 0
-        #Left/Right Labels not working
 
         if (len(rover.arucoMarkers) > 1):
             numCones = len(rover.arucoMarkers)
