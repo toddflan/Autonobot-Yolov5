@@ -17,7 +17,7 @@ screenDim = pyautogui.size()
 minTurn = 0.01
 maxTurn = 1
 minForward = 1
-maxForward = 5
+maxForward = 3
 
 # some function for me
 def getYMax(object):
@@ -53,7 +53,7 @@ def getGate(list):
             if list[i].yMax < 0.8*screenDim[1]: # not way at the bottom of screen
                 if list[i].name == 'AM2':
                     width = list[i].xMax - list[i].xMin
-                    return list[i].name, list[i].xMax - (3*width), list[i].xMax, list[i].yMax, width
+                    return list[i].name, list[i].xMax - (5*width), list[i].xMax, list[i].yMax, width
                 else:
                     return 'one', list[i].xMin, list[i].xMax, list[i].yMax, 0
         
