@@ -49,7 +49,7 @@ class MyRover(DriveAPI.Rover):
         # yMin
         # xMax
         
-        center = 1050
+        center = 960
             
         print('# of AMs:', len(rover.arucoMarkers), '; # of cones', len(rover.cones))
         
