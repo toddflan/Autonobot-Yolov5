@@ -4,6 +4,7 @@ import threading
 import matplotlib.pyplot as plt
 import PIL
 from PIL import ImageGrab
+import sys
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -95,6 +96,7 @@ class Rover:
         elif self.gear == Rover.reverse:
             pyautogui.keyDown(Rover.downArrow)  
             self.downArrowKeyState = Rover.keyDown
+        return self
         
     def ReleaseGas(self):
         pyautogui.keyUp(Rover.upArrow)
@@ -107,6 +109,7 @@ class Rover:
         pyautogui.keyUp(Rover.downArrow)
         self.downArrowKeyState = Rover.keyUp
         self.gear = Rover.drive
+        return self
         
     def PutInReverse(self):
         pyautogui.keyUp(Rover.upArrow)
@@ -244,12 +247,18 @@ class Rover:
             img = img.unsqueeze(0)
 
         # Inference
-        t1 = time_synchronized()
+        #t1 = time_synchronized()
+        
+        now = time.time()
         pred = self.model(img, augment=self.augment)[0]
 
         # Apply NMS
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms)
-        t2 = time_synchronized()
+        done = time.time()
+        sys.stdout.flush()
+        # print("Inference time: " + str(done - now))
+        
+        #t2 = time_synchronized()
         
         path = '' # blank for now
         im0 = im0s.copy() # make a copy to annotate
@@ -259,7 +268,8 @@ class Rover:
         amBoxes = []
 
         # Process detections
-        for i, det in enumerate(pred):  # detections per image
+        for i, det in enumerate(pred):  # detections per image/
+            #print(i)
             p, s = path, ''
 
             s += '%gx%g ' % img.shape[2:]  # print string
@@ -302,6 +312,7 @@ class Rover:
         return coneBoxes, amBoxes
     
     def PredictYolo(self, image):
+    
         output = self.yolo.predict_coord(image)
         
         arucoMarkers = self.get_aruco_task(output)
@@ -416,6 +427,7 @@ class Rover:
         
         while self.state != Rover.forceStopped:
             self.Drive()
+            time.sleep(0.001)
         
     def Drive(self):
         print("Drive Not Implemented")
