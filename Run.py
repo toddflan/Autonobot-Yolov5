@@ -113,10 +113,11 @@ class MyRover(DriveAPI.Rover):
             print("TWO CONES:", len(two_cones))
             for cone in two_cones:
                 print("Y MIN :", cone.yMin)
-            if two_cones[0].xMin > two_cones[1].xMin:
-                temp_cone = two_cones[0];
-                two_cones[0] = two_cones[1]
-                two_cones[1] = temp_cone
+            if len(two_cones) == 2:
+                if two_cones[0].xMin > two_cones[1].xMin:
+                    temp_cone = two_cones[0];
+                    two_cones[0] = two_cones[1]
+                    two_cones[1] = temp_cone
 
             if two_cones[0].xMax < x < two_cones[1].xMin:
                 rover.PressGas()
