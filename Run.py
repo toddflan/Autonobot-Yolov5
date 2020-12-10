@@ -53,8 +53,8 @@ class MyRover(DriveAPI.Rover):
         
         rover.closestCones = rover.SelectTwoClosestMarkers()
         #print("Closest Cones:")
-        #for cone in rover.closestCones:
-            #print(cone)
+        #for marker in rover.closestCones:
+            #print(marker)
         
         rover.closestConesCount = 2
         if rover.closestCones[1] is None:
@@ -63,10 +63,22 @@ class MyRover(DriveAPI.Rover):
             rover.closestConesCount = 0
             
         rover.midPoint = rover.screenWidth / 2
-        if rover.closestConesCount == 1:
-            rover.midPoint = .85 * (rover.closestCones[0].xMax - rover.closestCones[0].xMin) / 2
-        elif rover.closestConesCount >= 2:
-            rover.midPoint = rover.closestCones[0].xMax + (rover.closestCones[1].xMin - rover.closestCones[0].xMax) / 2;
+        if rover.closestCones[0] is not None and rover.closestCones[0].name == "AM2":
+            #print("HERE!!!!!!!!!!!!")
+            if rover.closestConesCount == 1:
+                #print("HERE!!!!!!!!!!!!")
+                rover.midPoint = rover.closestCones[0].xMax + 3.5 * (rover.closestCones[0].xMax - rover.closestCones[0].xMin)
+            elif rover.closestConesCount >= 2:
+                rover.midPoint = max(
+                    rover.closestCones[0].xMax + 3.5 * (rover.closestCones[0].xMax - rover.closestCones[0].xMin),
+                    rover.closestCones[1].xMax + 3.5 * (rover.closestCones[1].xMax - rover.closestCones[1].xMin)            
+                    )
+        else:
+            if rover.closestConesCount == 1:
+                rover.midPoint = .85 * (rover.closestCones[0].xMax - rover.closestCones[0].xMin) / 2
+            elif rover.closestConesCount >= 2:
+                rover.midPoint = rover.closestCones[0].xMax + (rover.closestCones[1].xMin - rover.closestCones[0].xMax) / 2
+        
                     
         if rover.predictionCount == 0:
             rover.PutInDrive()
@@ -123,8 +135,11 @@ class MyRover(DriveAPI.Rover):
                     # # #rover.Halt()
                     
             # else:
-        bound = rover.screenWidth * .1
+        bound = rover.screenWidth * .1 #was .07
         coneBound = rover.screenWidth * .05
+        
+        if closestConesCount >= 1 and closestCones[0].name == "AM2":
+            bound = rover.screenWidth * .05 #was .07
         
         driveInterval = .05
                 
@@ -147,12 +162,15 @@ class MyRover(DriveAPI.Rover):
         if cone0AreaPercentage == 0 and cone1AreaPercentage == 0:
             if rover.direction != rover.left:
                 rover.TurnLeft()
-        elif max(cone0AreaPercentage, cone1AreaPercentage) < .0025 and midPoint >= (rover.screenWidth / 2) - (bound) and midPoint <= (rover.screenWidth / 2) + (bound):
+        #elif max(cone0AreaPercentage, cone1AreaPercentage) < .0025 and midPoint >= (rover.screenWidth / 2) - (bound) and midPoint <= (rover.screenWidth / 2) + (bound):
+        elif max(cone0AreaPercentage, cone1AreaPercentage) < .00055 and midPoint >= (rover.screenWidth / 2) - (bound) and midPoint <= (rover.screenWidth / 2) + (bound): #was .0007
             print("Far away go forward")
             #straightTime = rover.StraightTime(max(cone0AreaPercentage, cone1AreaPercentage))
             #rover.DriveStraight(straightTime)
             #rover.DriveStraight(.1)
-            rover.GoStraight().For(.5)
+            if rover.direction != rover.straight:
+                rover.GoStraight()
+                #rover.GoStraight().For(.25)
         # elif rover.cones[0].xMax >= rover.screenWidth / 2 - coneBound and rover.cones[0].xMax <= rover.screenWidth / 2 + coneBound and cone0AreaPercentage > .005:
         elif cone0AreaPercentage != 0 and closestCones[0].xMax >= rover.screenWidth / 2 - coneBound and closestCones[0].xMax <= rover.screenWidth / 2 + coneBound and cone0AreaPercentage > .005:
             # print("Nudge Right")
@@ -165,17 +183,16 @@ class MyRover(DriveAPI.Rover):
             # rover.NudgeLeft()
             if rover.direction != rover.left:
                 rover.TurnLeft()
-        elif min(cone0AreaPercentage, cone1AreaPercentage) >= rover.maxArea and midPoint >= rover.screenWidth / 2 - bound and midPoint <= rover.screenWidth / 2 + bound:
-            #print("Blaze AHEAD!")
-            if rover.curveStraightPrediction == "straight":
-                #rover.DriveStraight(1)
-                #rover.DriveStraight(driveInterval)
-                rover.GoStraight().For(1)
-            #else:
-                #rover.DriveStraight(.5)
-                #rover.DriveStraight(driveInterval)
-                #rover.DriveLeft(.5)    
-                #rover.DriveLeft(driveInterval)                  
+        elif min(cone0AreaPercentage, cone1AreaPercentage) >= .00176 and midPoint >= rover.screenWidth / 2 - bound and midPoint <= rover.screenWidth / 2 + bound:
+            print("Blaze AHEAD!")
+            if closestCones[0].name == "AM1":
+                rover.GoStraight().For(.35)
+            else:
+                for i in range(3):
+                    print("BUMP!")
+                    rover.TurnLeft()
+                    rover.GoStraight()
+                    
         elif midPoint >= (rover.screenWidth / 2) - bound and midPoint <= (rover.screenWidth / 2) + bound: # or (rover.cones[0].xMax < rover.screenWidth / 2 -  2 * bound and rover.cones[1].xMin > rover.screenWidth / 2 +  2 * bound ):
             #print("Proceed Forward!")
             #straightTime = rover.StraightTime(max(cone0AreaPercentage, cone1AreaPercentage))
@@ -245,6 +262,7 @@ class MyRover(DriveAPI.Rover):
         #    coneAreas.append([rover.ConeArea(cone), cone])
             
         for marker in rover.arucoMarkers:
+            #print(marker)
             coneAreas.append([marker.yMax, rover.screenWidth - marker.xMax, marker])
         
         try:
@@ -285,7 +303,7 @@ class MyRover(DriveAPI.Rover):
         
         rover.noDrive = False
         #rover.maxArea = .006
-        rover.maxArea = .012
+        #rover.maxArea = .0014
         rover.areaCalc = .016
         
         rover.lock = 0
