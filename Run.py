@@ -19,6 +19,9 @@ class MyRover(DriveAPI.Rover):
         # Runs once when the rover is started, then Analyze is called in a loop
         # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
         rover.PutInDrive()
+        rover.PressGas()
+        rover.DriveFor(1.75)
+        rover.ReleaseGas()
             
     def Analyze(rover):
         # capture the screen
@@ -121,9 +124,6 @@ class MyRover(DriveAPI.Rover):
                     rover.cones[0] = rover.cones[1]
                     rover.cones[1] = copy
 
-                left_barrier = [rover.cones[0].xMin - 25, rover.cones[0].xMax + 25]
-                right_barrier = [rover.cones[1].xMin - 25, rover.cones[1].xMax + 25]
-
                 if len(rover.arucoMarkers) == 2:
                     if 0 < abs(rover.arucoMarkers[0].yMin - rover.arucoMarkers[1].yMin) < 50:
                         rover.arucoMarkers[0] = rover.arucoMarkers[0]
@@ -173,6 +173,10 @@ class MyRover(DriveAPI.Rover):
                     print("Pierce")
 
                 if marker_condition == True:
+
+                    left_barrier = [rover.cones[0].xMin, rover.cones[0].xMax + 50]
+                    right_barrier = [rover.cones[1].xMin - 50, rover.cones[1].xMax]
+
                     if left_barrier[1] < screen_x / 2 < right_barrier[0]:
                         rover.PressGas()
                         rover.DriveFor(1.75)
@@ -189,15 +193,19 @@ class MyRover(DriveAPI.Rover):
                         rover.ReleaseGas()
                     elif rover.cones[1].xMax < screen_x / 2:
                         rover.PressGas()
-                        rover.TurnLeft().For(0.05)
+                        rover.TurnLeft().For(0.075)
                         rover.GoStraight()
                         rover.ReleaseGas()
                     elif rover.cones[0].xMin > screen_x / 2:
                         rover.PressGas()
-                        rover.TurnRight().For(0.05)
+                        rover.TurnRight().For(0.075)
                         rover.GoStraight()
                         rover.ReleaseGas()
                 elif marker_condition == False:
+
+                    left_barrier = [rover.cones[0].xMin - 75, rover.cones[0].xMax]
+                    right_barrier = [rover.cones[1].xMin, rover.cones[1].xMax + 75]
+
                     if rover.cones[1].xMax < screen_x / 2 or rover.cones[0].xMin > screen_x / 2:
                         rover.PressGas()
                         rover.DriveFor(1.75)
@@ -214,7 +222,7 @@ class MyRover(DriveAPI.Rover):
                         rover.ReleaseGas()
                     elif left_barrier[1] < screen_x / 2 < right_barrier[0]:
                         rover.PressGas()
-                        rover.TurnRight().For(0.05)
+                        rover.TurnRight().For(0.075)
                         rover.GoStraight()
                         rover.ReleaseGas()
 
