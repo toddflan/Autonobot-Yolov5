@@ -88,7 +88,7 @@ class MyRover(DriveAPI.Rover):
 				rover.leftcone = rover.rightcone
 				rover.rightcone = rover.conetemp
 
-			if((rover.leftcone.yMax >= rover.rightcone.yMax + 250) and (len(rover.arucoMarkers) >= 1)):
+			if((rover.leftcone.yMax >= rover.rightcone.yMax + 150) and (len(rover.arucoMarkers) >= 1)):
 				if(rover.am.name == 'AM2'):
 					rover.rightcone = rover.leftcone
 			# print(rover.leftcone)
@@ -97,6 +97,8 @@ class MyRover(DriveAPI.Rover):
 			if((len(rover.arucoMarkers) == 0) or rover.am.name == 'AM1'):
 				if ((rover.leftcone.xMax <= rover.center - 30*(rover.xmax/1920)) and (rover.rightcone.xMin >= rover.center + 30*(rover.xmax/1920))):
 					rover.time = pow((1080/rover.ymax)*((rover.leftcone.yMax + rover.rightcone.yMax) / 2),-6.055)*129000000000000000
+					if((1080/rover.ymax)*((rover.leftcone.yMax + rover.rightcone.yMax) / 2) <= 540):
+						rover.time /= 2
 					if(rover.time < 1):
 						print("straight")
 						rover.GoStraight()
@@ -251,26 +253,19 @@ class MyRover(DriveAPI.Rover):
 					rover.lturn = False
 					rover.DriveFor(1.5)
 		else:
+			print("no cones (left)")
+			rover.PressGas()
 			if(rover.lturn):
-				print("no cones (right)")
-				rover.PressGas()		
 				rover.TurnRight()
-				rover.DriveFor(0.3)
-				rover.GoStraight()
-				rover.ReleaseGas()
-				rover.lturn = False
-				rover.rturn = True
-				rover.DriveFor(1.5)
+				rover.DriveFor(0.4)
 			else:
-				print("no cones (left)")
-				rover.PressGas()		
 				rover.TurnLeft()
 				rover.DriveFor(0.65)
-				rover.GoStraight()
-				rover.ReleaseGas()
-				rover.lturn = True
-				rover.rturn = False
-				rover.DriveFor(1.5)
+			rover.GoStraight()
+			rover.ReleaseGas()
+			rover.lturn = True
+			rover.rturn = False
+			rover.DriveFor(1.5)
 		
 
 				
