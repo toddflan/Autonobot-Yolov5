@@ -20,7 +20,11 @@ class MyRover(DriveAPI.Rover):
         # Here is where to do any setup items, such as putting the rover in drive and pressing the gas
         rover.PutInDrive()
         rover.PressGas()
+<<<<<<< HEAD
         rover.DriveFor(1.75)
+=======
+        rover.GoStraight().For(1)
+>>>>>>> b41598e9f05436a75862dc32432b55b5a03a5558
         rover.ReleaseGas()
             
     def Analyze(rover):
